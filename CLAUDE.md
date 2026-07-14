@@ -36,15 +36,15 @@ exist and is NOT this site).
   drop the master in assets/logos/originals/ (gitignored) and run `scripts/add_logo.sh` — it
   resizes rasters to <=320px tall, copies SVGs through, appends a `.impact-logo-<name>` --logo-h
   knob without clobbering tuned values, and prints paste-ready markup. Placement + alt text are
-  still a human call — see README "Adding a partner/mission logo". Two hard placement rules learned
-  the hard way: (1) the accordion `has-logo` row REPLACES the link's text name, so it needs a logo
-  that names itself (a wordmark, or a badge with the name inside like TEMPO). A bare mark with no
-  wordmark (cxc.svg = crossed telescopes, nothing else) would leave the link anonymous — use
-  `.impact-mark-lockup` instead, which sets the mark BESIDE a real text name inside the same
-  `.impact-logo-row` (img gets alt="" since the adjacent text names it). That's the pattern for any
-  future mark-only logo. (2) card logos sit on a photo with only a drop-shadow, so a white wordmark
-  dies on a bright frame (sma.png washed out on the snowy SMA card and was pulled back to
-  accordion-only).
+  still a human call — see README "Adding a partner/mission logo". Two hard placement rules:
+  (1) an accordion `has-logo` link ALWAYS keeps its `.impact-link-name` — the `.impact-logo-row`
+  goes ABOVE the title, never in place of it, and the logo duplicating the title text (gmt.png over
+  the words "Giant Magellan Telescope") is intended, not a bug. The user asked for this explicitly
+  after logo-only links shipped; don't "tidy" the titles away again. Every logo img there takes
+  alt="" since the title names the link (an alt would double-announce). This is also why a bare mark
+  like cxc.svg needs no special handling. (2) card logos sit on a photo with only a drop-shadow, so
+  a white wordmark dies on a bright frame (sma.png washed out on the snowy SMA card and was pulled
+  back to accordion-only).
   Two placements, both optional independently:
   `.card-logo` (uniform 46px, bottom-left of a mission card's `.card-art`) and the accordion's
   `.impact-link.flagship.has-logo` + `.impact-logo-row` (each logo gets its own
