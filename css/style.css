@@ -730,45 +730,40 @@ a { color: inherit; }
 }
 
 @media (max-width: 560px) {
-  /* A side-by-side 96px thumbnail crops these landscape photos down to an
-     unrecognizable sliver. Below this width, let the photo bleed behind the
-     whole header instead, with a scrim so the text stays legible over any
-     photo, bright or dark. */
+  /* A side-by-side thumbnail crops these landscape photos to an unrecognizable
+     sliver at this width, so the photo goes full width — but as a BANNER above
+     the text, never behind it. Setting the title over a full-bleed photo made it
+     unreadable: these frames are busy and bright (a lit telescope against a
+     starfield), and no scrim strong enough to fix that leaves the photo worth
+     showing. Stacking keeps every glyph on flat navy at full contrast.
+     The photo still dissolves into the navy exactly like the desktop row —
+     same mask-image fade, just rotated 90deg (to bottom, not to right) to match
+     the stacked axis. Keep it that way: it's the one gesture tying the two
+     layouts together. The button is the same flex row as desktop, only wrapped
+     — art takes a full-width line, text + chevron share the next — so there's
+     no bespoke mobile structure and no HTML change. */
   .impact-acc-header {
-    position: relative;
-    display: block;
-    min-height: 148px;
-    padding: 1.1rem 3rem 1.2rem 1.1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
   }
   .impact-acc-art {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    flex: 0 0 100%;
+    height: 168px;
     min-height: 0;
-    /* Full-bleed now, not a fading side strip. */
-    -webkit-mask-image: none;
-    mask-image: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 42%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 42%, transparent 100%);
   }
-  .impact-acc-header::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(5, 13, 36, .82) 0%, rgba(5, 13, 36, .86) 55%, rgba(5, 13, 36, .94) 100%);
-  }
+  /* 1.5rem matches .impact-acc-lede / .impact-links, so the title, lede, and
+     link cards all share one left edge down the stacked card. */
+  /* flex-basis 0, not auto: on `auto` the text's own content width fills the
+     line and elbows the chevron onto a third line of its own. */
   .impact-acc-text {
-    position: relative;
-    z-index: 1;
-    padding: 0;
+    flex: 1 1 0;
+    padding: 0 0 1.2rem 1.5rem;
   }
-  .impact-acc-title { font-size: 1.15rem; text-shadow: 0 1px 8px rgba(0, 0, 0, .5); }
-  .impact-acc-chev {
-    position: absolute;
-    top: 1rem;
-    right: .9rem;
-    z-index: 2;
-    padding-right: 0;
-  }
+  .impact-acc-title { font-size: 1.15rem; }
+  .impact-acc-chev { padding-right: 1.1rem; }
 }
 
 .impact-tag {
@@ -798,6 +793,13 @@ a { color: inherit; }
   line-height: 1.6;
   color: rgba(255, 255, 255, .85);
   text-align: justify;
+}
+/* Justifying needs a wide measure; at the ~28 characters a phone gives this
+   column, it tears rivers of whitespace through the paragraph. Desktop keeps
+   its justified block. This override has to live AFTER the rule above — same
+   specificity, so source order decides; in the earlier 560px block it lost. */
+@media (max-width: 560px) {
+  .impact-acc-lede { text-align: left; }
 }
 
 .impact-links {

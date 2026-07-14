@@ -122,12 +122,36 @@ place of the text title, sized via `.impact-logo-astroai` / `.impact-logo-scix` 
 HITRAN, AstroAI, scixplorer.org, chandra.si.edu, central-engineering, science-education-department,
 etc.).
 
-Each row's `.impact-acc-art` image (set via inline `background-image`) sits on the left and fades
-**left-to-right** into the navy via a horizontal `mask-image` (the image itself fades to transparent
-so the card's own background shows through — no seam). Images live in `assets/images/impact/`
-(800×360 JPEGs: `leadership`, `defending`, `ai`, `xray`, `engineering`, `stars`, `education`). To
-swap one, replace the file (keep the name) or point the row's `background-image` at a new file —
-optimize to ~800px wide / under ~150KB first.
+Each row's `.impact-acc-art` image (set via inline `background-image`) fades into the navy via a
+`mask-image` — the image itself fades to transparent so the card's own background shows through, no
+seam. **The fade rotates with the layout, and the two cases are the same gesture:**
+
+- **Above 560px** the image is a strip on the **left** of the header and fades **left-to-right**.
+- **At/below 560px** (`@media (max-width: 560px)`) a 26%-wide strip would crop these landscape
+  photos to an unrecognizable sliver, so the header `flex-wrap: wrap`s: the image takes a full-width
+  line as a **banner above the text** and fades **top-to-bottom**, then the text and chevron share
+  the next line. The button is the same flex row in both cases — no bespoke mobile structure.
+
+Keep the mobile fade as the desktop fade rotated 90°; it's the one gesture tying the layouts
+together. **Never set the title over a full-bleed photo** — that treatment was tried and reverted:
+these frames are busy and bright (a lit telescope on a starfield), and no scrim dark enough to fix
+the contrast leaves the photo worth showing. Stacking keeps every glyph on flat navy. (The reverted
+version also shipped an invisible scrim: an absolutely-positioned `::before` generates *before*
+`.impact-acc-art`, so with both at `z-index: auto` the photo painted over its own scrim. If you ever
+layer anything behind that art, mind the paint order.)
+
+Tune the banner's height with `height` on `.impact-acc-art` in the 560px block (currently `168px`) —
+it trades scroll length against how much photo you see, and stacked headers are roughly twice the
+height of the side-by-side ones.
+
+Images live in `assets/images/impact/` (800×360 JPEGs: `leadership`, `defending`, `ai`, `xray`,
+`engineering`, `stars`, `education`). To swap one, replace the file (keep the name) or point the
+row's `background-image` at a new file — optimize to ~800px wide / under ~150KB first.
+
+`.impact-acc-lede` is `text-align: justify` on desktop, where the wide measure makes the block span
+cleanly edge-to-edge, but is reset to `left` below 560px — at ~28 characters justifying tears rivers
+of whitespace through the paragraph. That override **must stay after** the base rule in the
+stylesheet: same specificity, so source order decides the winner.
 
 **Our Top Discoveries** (the 7th, last `.impact-item`) is a plain `<ul class="discovery-list">` of
 `<li class="discovery-row">` entries hardcoded in `index.html` — no JS array, no carousel, nothing

@@ -58,7 +58,16 @@ exist and is NOT this site).
 - Impact accordion (#impact-accordion): a vertical stack of `.impact-item` themed disclosures
   (this replaced a horizontal carousel). Each header is an `<h3 class="impact-acc-h">` wrapping a
   `.impact-acc-header` button (heading wraps button → heading order + accessible name both kept);
-  the left `.impact-acc-art` image fades left→right into the navy via a horizontal mask-image.
+  the `.impact-acc-art` image fades into the navy via a mask-image that ROTATES with the layout:
+  left→right as a left strip above 560px, top→bottom as a full-width banner above the text at/below
+  560px (the header just `flex-wrap: wrap`s — art gets its own line, text + chevron share the next;
+  same flex row, no bespoke mobile structure). Keep them the same gesture rotated 90°. Never set the
+  title over a full-bleed photo — tried and reverted; these frames are too busy/bright and no
+  workable scrim leaves the photo worth showing. That reverted version also had an invisible scrim:
+  an absolute `::before` generates BEFORE `.impact-acc-art`, so at z-index:auto the photo painted
+  over its own scrim — mind paint order if you ever layer behind that art. `.impact-acc-lede` is
+  justified on desktop but `left` below 560px (rivers at ~28 chars); that override must stay AFTER
+  the base rule — equal specificity, so source order decides.
   Bodies (`.impact-acc-body`) expand via grid-template-rows 0fr→1fr, accordion-style (one open at
   a time). Bodies render OPEN by default so the section works with no JS; main.js adds `.js` to the
   container to switch on the collapse, open the first row, and mark closed bodies `inert`. The
