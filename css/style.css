@@ -876,11 +876,22 @@ a { color: inherit; }
 .impact-logo-scix { --logo-h: 26px; }
 .impact-logo-stars { --logo-h: 30px; }
 .impact-logo-tempo { --logo-h: 40px; }
-.impact-logo-gmt { --logo-h: 40px; }
-.impact-logo-eht { --logo-h: 38px; }
+.impact-logo-gmt { --logo-h: 60px; }
+.impact-logo-eht { --logo-h: 60px; }
 .impact-logo-chandra { --logo-h: 26px; }
 .impact-logo-lynx { --logo-h: 32px; }
 .impact-logo-mpc { --logo-h: 40px; }
+/* eht, sma and flwo are one CfA "next generation" lockup family and are all at
+   60px so they read at the same weight (gmt matches them). Tempting to derive
+   these from each file's ink ratio instead — don't bother, it doesn't work: the
+   lockups put different proportions of their ink into the wordmark vs the mark,
+   so equal ink height still looked unequal. Set by eye. */
+.impact-logo-flwo { --logo-h: 60px; }
+.impact-logo-sma { --logo-h: 60px; }
+/* veritas + cxc ship only as .card-logo (uniform 46px) and have no accordion
+   link yet; these knobs sit ready in case one is ever added. */
+.impact-logo-veritas { --logo-h: 32px; }
+.impact-logo-cxc { --logo-h: 32px; }
 
 /* ---------- Our Top Discoveries ----------
    Now the last item in #impact-accordion — same card, same header, same

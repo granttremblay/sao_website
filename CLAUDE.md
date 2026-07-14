@@ -32,8 +32,17 @@ exist and is NOT this site).
   fallback — acceptable, outlined versions would be better). CfA + Smithsonian Science
   logos are fully outlined. "Reversed" = white text for dark backgrounds. The white STARS
   logo is a generated recolor of the black one.
-- Partner/mission logos (TEMPO, STARS, AstroAI, NASA SciX) are manual, not scripted — see
-  README "Adding a partner/mission logo". Two placements, both optional independently:
+- Partner/mission logos (TEMPO, STARS, AstroAI, NASA SciX, GMT, EHT, SMA, FLWO, VERITAS, CXC):
+  drop the master in assets/logos/originals/ (gitignored) and run `scripts/add_logo.sh` — it
+  resizes rasters to <=320px tall, copies SVGs through, appends a `.impact-logo-<name>` --logo-h
+  knob without clobbering tuned values, and prints paste-ready markup. Placement + alt text are
+  still a human call — see README "Adding a partner/mission logo". Two hard placement rules learned
+  the hard way: (1) the accordion `has-logo` row REPLACES the link's text name, so it needs a logo
+  that names itself (a wordmark, or a badge with the name inside like TEMPO) — a bare mark like
+  cxc.svg would leave the link anonymous, so those belong on a mission card where the <h3> names it;
+  (2) card logos sit on a photo with only a drop-shadow, so a white wordmark dies on a bright frame
+  (sma.png washed out on the snowy SMA card and was pulled back to accordion-only).
+  Two placements, both optional independently:
   `.card-logo` (uniform 46px, bottom-left of a mission card's `.card-art`) and the accordion's
   `.impact-link.flagship.has-logo` + `.impact-logo-row` (each logo gets its own
   `.impact-logo-<name>` rule — wordmarks ~26-32px, squarish badges like TEMPO ~40px

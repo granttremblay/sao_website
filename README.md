@@ -31,6 +31,7 @@ scripts/
   add_mosaic_images.sh      Mosaic image pipeline (see below)
   add_hero_images.sh        Hero backdrop image pipeline (see below)
   add_discovery_images.sh   Our Top Discoveries image pipeline (see below)
+  add_logo.sh               Partner/mission logo pipeline + --logo-h knob (see below)
   update_news.py            CfA news feed scraper (see below)
 .github/workflows/
   update-news.yml           Daily Action that refreshes the news feed
@@ -194,27 +195,39 @@ To add a new discovery image:
 
 ## Adding a partner/mission logo (e.g. TEMPO, STARS, AstroAI)
 
-There's no script for this one — logos each need a human to pick where they go and write real alt
-text, so it's a two-step manual copy-paste-and-edit. Takes a few minutes.
+**1. Drop the master in `assets/logos/originals/` and run the script.**
 
-**1. Get the file into `assets/logos/`, optimized.**
+```bash
+./scripts/add_logo.sh          # optimize + add the CSS size knob + print snippets
+./scripts/add_logo.sh --push   # ...and commit + push to deploy
+```
 
-- If it's already an SVG, just drop it in — nothing to optimize.
-- If it's a raster PNG/JPG (like `TEMPO-Logo.png`), it's almost always way oversized straight out of
-  a media-kit download (the original TEMPO logo was 3300px, 958KB for a graphic that displays at
-  ~40px tall). Back up the original, then downsize with `sips` — a logo never needs to be taller
-  than ~320px even for retina displays:
+For each master it: resizes rasters to at most 320px tall (a logo never needs more, even on retina —
+this took TEMPO's from 3300px/958KB to 91KB) and writes `assets/logos/<name>.png`; copies SVGs
+through untouched, since resampling a vector is meaningless; adds
+`.impact-logo-<name> { --logo-h: 32px; }` to `css/style.css` **without ever clobbering a height
+you've already tuned**; and prints paste-ready HTML for both placements with the `width`/`height`
+attributes computed from the real file. It also reports what fraction of each raster is actual ink
+vs transparent padding — see "Resizing a logo" below for why that number matters.
 
-  ```bash
-  cd assets/logos
-  mkdir -p originals && cp YourLogo.png originals/
-  sips --resampleHeight 320 YourLogo.png --out YourLogo.png
-  ```
+`originals/` is gitignored: keep the master there, ship only the resized file. Name the master what
+you want the CSS class to be (`sma.png` → `.impact-logo-sma`), since the filename becomes the slug.
 
-  That alone (no quality flags needed for a mostly-flat-color logo) took TEMPO's logo from 958KB to
-  91KB. `originals/` is gitignored — keep the master there, ship only the resized file.
+**The script does the mechanical part; you still choose the placement and write real alt text** —
+step 2 is a copy-paste-and-edit of what it printed.
 
 **2. Add it in one or both of two places, matching an existing logo exactly:**
+
+> **Does the logo contain the organisation's name?** The accordion placement puts the logo *in place
+> of* the link's text name, so it only works for a lockup that names itself — a wordmark (`gmt.png`,
+> `chandra.png`) or a badge with the name inside it (`TEMPO-Logo.png`). A **mark with no text**
+> (`cxc.svg` is crossed telescopes and nothing else) would leave the link visually anonymous; put
+> that on a mission card instead, where the card's own `<h3>` still names the thing.
+>
+> **Will it read against that specific photo/background?** Card logos sit on a photo with only a
+> drop-shadow to help. A white wordmark disappears on a bright frame — `sma.png` was tried on the
+> Submillimeter Array card (a snowy Maunakea shot) and washed out, so it ships only as an accordion
+> link. Both placements are optional and independent; use the one(s) that actually look good.
 
 - **A mission card** under "Our Missions" (`.card`) — add a second `<img class="card-logo">` right
   after the card's photo, inside `.card-art`. No new CSS needed; `.card-logo` is a single shared
@@ -244,17 +257,19 @@ text, so it's a two-step manual copy-paste-and-edit. Takes a few minutes.
     </a></li>
   ```
 
-  Then add one line to `css/style.css` next to `.impact-logo-astroai` / `.impact-logo-scix` /
-  `.impact-logo-stars` / `.impact-logo-tempo`, sizing your logo to read at a comfortable height —
-  wordmarks usually want ~26–32px, a squarish badge (like TEMPO's) wants a bit taller (~40px) since
-  it has less horizontal reach at the same height:
+  `add_logo.sh` already added the size knob next to `.impact-logo-astroai` / `.impact-logo-scix` /
+  `.impact-logo-stars` / `.impact-logo-tempo` at a starting `32px` — now tune it to read at a
+  comfortable height. Wordmarks usually want ~26–32px; a squarish badge (like TEMPO's) wants a bit
+  taller (~40px) since it has less horizontal reach at the same height; the CfA "next generation"
+  lockups (`eht`, `sma`, `flwo`) all sit at 60px so the family reads at one weight.
 
   ```css
   .impact-logo-yourlogo { --logo-h: 32px; }
   ```
 
-  Match the `width`/`height` HTML attributes to the logo's real aspect ratio (`sips -g pixelWidth -g
-  pixelHeight file.png` if unsure) so the browser reserves the right space before the image loads.
+  The script sets the `width`/`height` attributes from the real file. Keep them matching the logo's
+  true aspect ratio (`sips -g pixelWidth -g pixelHeight file.png` if unsure) so the browser reserves
+  the right space before the image loads — they are **not** the size control.
 
 ### Resizing a logo — use `--logo-h`
 
