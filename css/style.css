@@ -867,7 +867,10 @@ a { color: inherit; }
   background: rgba(56, 189, 248, .12);
   border-color: rgba(56, 189, 248, .35);
 }
-.impact-link.flagship .impact-link-name { font-size: 1.08rem; color: var(--si-yellow); }
+/* Size only, no colour: every .impact-link-name stays white (inherited from the
+   base rule) so the titles read as one set. A flagship's emphasis comes from its
+   cyan tint + border, not a different-coloured title. */
+.impact-link.flagship .impact-link-name { font-size: 1.08rem; }
 .impact-link.flagship:hover { background: rgba(56, 189, 248, .2); }
 
 /* Brand-logo flagship links (AstroAI, NASA SciX) — logo ABOVE the title. */
