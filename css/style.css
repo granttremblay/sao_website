@@ -440,6 +440,18 @@ a { color: inherit; }
   50%       { transform: rotate(45deg) translate(5px, 5px); opacity: 1; }
 }
 
+@media (max-width: 900px) {
+  /* Below this width a long credit line reaches the horizontal center and
+     runs under the bobbing scroll chevron (and can touch the arrow buttons
+     at the right). Lift the credit above that whole bottom control band —
+     chevron + bob tops out ~2.9rem up, the arrows ~3.4rem — so the credit
+     can wrap to any number of lines without colliding. */
+  .hero-credit {
+    bottom: 4.2rem;
+    max-width: calc(100vw - 2rem);
+  }
+}
+
 /* ---------- Stats band ---------- */
 
 .stats {
