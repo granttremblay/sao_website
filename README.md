@@ -267,6 +267,26 @@ re-running retires that image from the hero.
 - **Edit a credit** by changing its `credit:` string in `HERO_MANIFEST`.
 - With a single image the arrow controls hide themselves automatically.
 
+### Framing — put the subject bottom-left
+
+`.hero-slide` uses `background: cover` with **`background-position: left bottom`**, so the hero's
+crop is anchored to the image's **bottom-left corner**, which is always in frame at every viewport
+size. Compose (or pre-crop) masters accordingly: **the subject belongs in the lower-left of the
+frame.** `cover` only ever overflows one axis, and which one flips with the viewport, so a single
+value covers both regimes:
+
+| Viewport | Overflows | What gets cropped | Roughly what's visible |
+|---|---|---|---|
+| Phone (375×812) | horizontally | the right of the frame | leftmost **~26%** of the image's width |
+| Laptop (1440×900) | horizontally | the right of the frame | leftmost ~90% |
+| Ultrawide (2560×1080) | vertically | the **top** of the frame | bottom ~64–84% |
+
+The phone case is why this matters: every backdrop is landscape (aspect 1.5–2.0) against a `100svh`
+hero, so a phone throws away about three quarters of the image's width. Centring used to cut the
+subject off the left edge. A dead-centre subject (e.g. the Milky Way panorama's galactic bulge)
+will read as empty sky on mobile — crop such a master left-of-centre before adding it. Don't set
+`background-position` back to `center`.
+
 ### Contrast (dark vs. light frames)
 
 There is **no darkening overlay** — backdrops show as-is. For the usual dark-sky frames, legibility

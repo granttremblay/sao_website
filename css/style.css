@@ -193,7 +193,15 @@ a { color: inherit; }
 .hero-slide {
   position: absolute;
   inset: 0;
-  background-position: center;
+  /* Anchor the cover-crop to the bottom-left corner, which is where these
+     backdrops keep their subject. `cover` only ever overflows one axis, and
+     which one flips with the viewport: every hero image is landscape (1.5–2.0)
+     against a 100svh hero, so a phone overflows horizontally (~26% of the
+     image's width survives — centring threw the subject off the left edge)
+     while an ultrawide overflows vertically. `left bottom` anchors whichever
+     axis is overflowing, so this one value holds the bottom-left in frame at
+     every width. Don't put it back to `center`. */
+  background-position: left bottom;
   background-size: cover;
   background-repeat: no-repeat;
   opacity: 0;
