@@ -857,17 +857,30 @@ a { color: inherit; }
 .impact-logo {
   width: auto;
   display: block;
+  /* SIZE KNOB — `--logo-h`. Set a per-logo default below, or override one
+     instance straight from index.html:
+         <img class="impact-logo impact-logo-eht" style="--logo-h: 52px" …>
+     The width/height ATTRIBUTES on the <img> are not the knob: they only
+     declare the intrinsic aspect ratio so the row reserves space before the
+     image loads. Any CSS height beats a presentational attribute, so editing
+     them has no visual effect — keep them accurate, tune with --logo-h. */
+  height: var(--logo-h, 30px);
 }
-/* Sized individually so each wordmark reads at a comfortable size. */
-.impact-logo-astroai { height: 32px; }
-.impact-logo-scix { height: 26px; }
-.impact-logo-stars { height: 30px; }
-.impact-logo-tempo { height: 40px; }
-.impact-logo-gmt { height: 40px; }
-.impact-logo-eht { height: 38px; }
-.impact-logo-chandra { height: 26px; }
-.impact-logo-lynx { height: 32px; }
-.impact-logo-mpc { height: 40px; }
+/* Sized individually so each wordmark reads at a comfortable size. These are
+   NOT comparable across logos: each file carries its own transparent padding,
+   so the same --logo-h yields different ink. eventhorizon.png is ~34% vertical
+   padding (ink fills 67% of the canvas) while gmt.png is ~12% — which is why
+   EHT at 38px looks much smaller than GMT at 40px. Judge by eye, not by number;
+   trimming a file's padding is the other lever. */
+.impact-logo-astroai { --logo-h: 32px; }
+.impact-logo-scix { --logo-h: 26px; }
+.impact-logo-stars { --logo-h: 30px; }
+.impact-logo-tempo { --logo-h: 40px; }
+.impact-logo-gmt { --logo-h: 40px; }
+.impact-logo-eht { --logo-h: 38px; }
+.impact-logo-chandra { --logo-h: 26px; }
+.impact-logo-lynx { --logo-h: 32px; }
+.impact-logo-mpc { --logo-h: 40px; }
 
 /* ---------- Our Top Discoveries ----------
    Now the last item in #impact-accordion — same card, same header, same
@@ -1088,7 +1101,10 @@ a { color: inherit; }
   position: absolute;
   left: 16px;
   bottom: 12px;
-  height: 46px;
+  /* Same --logo-h knob as .impact-logo — uniform 46px here by default, but a
+     logo with heavy built-in padding can be bumped per instance from
+     index.html: <img class="card-logo" style="--logo-h: 56px" …>. */
+  height: var(--logo-h, 46px);
   width: auto;
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .65));
 }

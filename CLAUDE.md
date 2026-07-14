@@ -36,8 +36,16 @@ exist and is NOT this site).
   README "Adding a partner/mission logo". Two placements, both optional independently:
   `.card-logo` (uniform 46px, bottom-left of a mission card's `.card-art`) and the accordion's
   `.impact-link.flagship.has-logo` + `.impact-logo-row` (each logo gets its own
-  `.impact-logo-<name>` height rule — wordmarks ~26-32px, squarish badges like TEMPO ~40px
-  since they have less horizontal reach at the same height). Raster logos land oversized from
+  `.impact-logo-<name>` rule — wordmarks ~26-32px, squarish badges like TEMPO ~40px
+  since they have less horizontal reach at the same height). SIZING: the knob is the `--logo-h`
+  custom property — both `.impact-logo` (`height: var(--logo-h, 30px)`) and `.card-logo`
+  (`var(--logo-h, 46px)`) read it, settable per-logo in CSS or per-instance inline from index.html
+  (`style="--logo-h: 52px"`). The `<img>` width/height ATTRIBUTES are not a styling knob — CSS
+  height beats a presentational attribute, so editing them does nothing visually; they exist only
+  to declare the aspect ratio against layout shift, so keep them accurate. --logo-h values are NOT
+  comparable across logos: each file has its own transparent padding (eventhorizon.png is ~34%
+  vertical padding vs gmt.png's ~12%, which is why EHT at 38px looks smaller than GMT at 40px) —
+  tune by eye, or crop the file's dead margin. Raster logos land oversized from
   media kits (TEMPO's was 3300px/958KB) — always `sips --resampleHeight 320` before shipping;
   keep the master in `assets/logos/originals/` (gitignored).
 - Mosaic: `scripts/add_mosaic_images.sh` is the only sanctioned way to add tiles — it

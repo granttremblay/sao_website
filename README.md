@@ -218,7 +218,8 @@ text, so it's a two-step manual copy-paste-and-edit. Takes a few minutes.
 
 - **A mission card** under "Our Missions" (`.card`) — add a second `<img class="card-logo">` right
   after the card's photo, inside `.card-art`. No new CSS needed; `.card-logo` is a single shared
-  rule (46px tall, bottom-left, drop-shadow) used by every card logo:
+  rule (46px tall by default, bottom-left, drop-shadow) used by every card logo — override just one
+  with an inline `style="--logo-h: 56px"` (see "Resizing a logo" below):
 
   ```html
   <div class="card-art">
@@ -249,11 +250,44 @@ text, so it's a two-step manual copy-paste-and-edit. Takes a few minutes.
   it has less horizontal reach at the same height:
 
   ```css
-  .impact-logo-yourlogo { height: 32px; }
+  .impact-logo-yourlogo { --logo-h: 32px; }
   ```
 
   Match the `width`/`height` HTML attributes to the logo's real aspect ratio (`sips -g pixelWidth -g
   pixelHeight file.png` if unsure) so the browser reserves the right space before the image loads.
+
+### Resizing a logo — use `--logo-h`
+
+**Editing an `<img>`'s `width`/`height` attributes does nothing visually.** Those attributes only
+declare the intrinsic aspect ratio (which prevents layout shift — keep them accurate). Any CSS
+`height` beats a presentational attribute, and both `.impact-logo` and `.card-logo` set one.
+
+The knob is the `--logo-h` custom property. Both `.impact-logo` (`height: var(--logo-h, 30px)`) and
+`.card-logo` (`height: var(--logo-h, 46px)`) read it, and width follows automatically from the
+aspect ratio. Set it two ways:
+
+- **Per logo, for every instance** — in `css/style.css`: `.impact-logo-eht { --logo-h: 38px; }`
+- **Per instance, straight from `index.html`** — inline, which wins over the class:
+
+  ```html
+  <img class="impact-logo impact-logo-eht" style="--logo-h: 52px" src="…" alt="Event Horizon Telescope"
+    width="152" height="38">
+  ```
+
+**These numbers are not comparable between logos.** Each file carries its own transparent padding,
+so the same `--logo-h` yields a different amount of visible ink. `eventhorizon.png` is ~34% vertical
+padding (ink fills only 67% of the canvas); `gmt.png` is ~12%. That's why EHT at `38px` looks much
+smaller than GMT at `40px` — the height is nearly the same, the ink isn't. Tune by eye, not by
+matching numbers. To check a file's padding:
+
+```bash
+python3 -c "from PIL import Image; im=Image.open('assets/logos/x.png').convert('RGBA'); \
+print(im.size, im.getchannel('A').getbbox())"
+```
+
+Bumping `--logo-h` is the quick lever; cropping the file's dead margin (and re-matching the
+`width`/`height` attributes) is the tidier one, since it makes the logo's number comparable to the
+others.
 
 You don't have to do both placements — TEMPO's mission card and accordion link both got the logo
 here because it fit well in both spots, but a logo that's only relevant to one context (e.g. a
