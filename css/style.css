@@ -900,7 +900,7 @@ a { color: inherit; }
    EHT at 38px looks much smaller than GMT at 40px. Judge by eye, not by number;
    trimming a file's padding is the other lever. */
 .impact-logo-astroai { --logo-h: 52px; }
-.impact-logo-scix { --logo-h: 26px; }
+.impact-logo-scix { --logo-h: 46px; }
 .impact-logo-stars { --logo-h: 50px; }
 .impact-logo-tempo { --logo-h: 60px; }
 .impact-logo-gmt { --logo-h: 60px; }
@@ -920,7 +920,7 @@ a { color: inherit; }
 .impact-logo-veritas { --logo-h: 32px; }
 /* cxc is a bare mark rather than a wordmark, so it carries no text of its own
    to match against the family — sized to sit as a badge above its title. */
-.impact-logo-cxc { --logo-h: 64px; }
+.impact-logo-cxc { --logo-h: 84px; }
 
 /* ---------- Our Top Discoveries ----------
    Now the last item in #impact-accordion — same card, same header, same
