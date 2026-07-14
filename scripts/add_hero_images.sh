@@ -77,45 +77,69 @@ src = open(mainjs).read()
 m = re.search(r"const HERO_MANIFEST = \[(.*?)\];", src, flags=re.S)
 assert m, "HERO_MANIFEST array not found in js/main.js"
 
-# Preserve existing credits (keyed by filename) and the existing display order.
-# Entries are { file, focus?, tone?, credit }; parse fields by key so the
-# optional tone/focus survive a regen and field order doesn't matter. Any new
-# optional field must be added here too, or a regen will silently drop it.
-existing, order = {}, []
-for obj in re.finditer(r'\{(.*?)\}', m.group(1), flags=re.S):
-    body = obj.group(1)
-    fm = re.search(r'file:\s*("(?:[^"\\]|\\.)*")', body)
+# Keep every existing entry's EXACT source text. We deliberately do NOT rebuild
+# entries out of parsed fields: that older approach re-emitted each { file,
+# focus?, tone?, credit } from individual regexes, so any field the regex failed
+# to read was silently swapped for a placeholder (`credit or PLACEHOLDER`), and
+# an entry whose file: didn't parse was dropped from `order` entirely and then
+# re-added as "new" — i.e. hand-written credits could vanish with no warning.
+# Now the only thing read from an entry is its file:, purely to identify it;
+# everything you write inside an entry (credit, tone, focus, spacing, a comment,
+# any field added later) survives byte-for-byte because it is never rewritten.
+entries, order, unreadable = {}, [], []
+for obj in re.finditer(r'\{[^{}]*\}', m.group(1), flags=re.S):
+    raw = obj.group(0)
+    fm = re.search(r'file:\s*("(?:[^"\\]|\\.)*")', raw)
     if not fm:
+        unreadable.append(" ".join(raw.split())[:110])
         continue
-    f = json.loads(fm.group(1))
-    cm = re.search(r'credit:\s*("(?:[^"\\]|\\.)*")', body)
-    tm = re.search(r'tone:\s*("(?:[^"\\]|\\.)*")', body)
-    xm = re.search(r'focus:\s*("(?:[^"\\]|\\.)*")', body)
-    existing[f] = {"credit": json.loads(cm.group(1)) if cm else None,
-                   "tone": json.loads(tm.group(1)) if tm else None,
-                   "focus": json.loads(xm.group(1)) if xm else None}
-    order.append(f)
+    entries[json.loads(fm.group(1))] = raw.strip()
+    order.append(json.loads(fm.group(1)))
+
+# Never silently skip an entry we can't identify — that's exactly how a credit
+# used to get replaced by a placeholder. Stop and let a human look.
+if unreadable:
+    sys.exit("Refusing to touch HERO_MANIFEST: could not read a file: key from "
+             f"{len(unreadable)} entry/entries, e.g.\n    {unreadable[0]}\n"
+             "Give it a plain file: \"name.jpg\" and re-run. (Rewriting now would "
+             "replace that entry's credit with a placeholder.)")
 
 PLACEHOLDER = "Placeholder credit — describe this image, then: Credit: [Name / Institution]."
-ordered = [f for f in order if f in present] + [f for f in present if f not in order]
+PIN_FIRST = "milkyway_backdrop.jpg"  # always the opening frame; see README
+
+kept    = [f for f in order if f in present]
+new     = [f for f in present if f not in order]
+retired = [f for f in order if f not in present]
+ordered = kept + new
+if PIN_FIRST in ordered:
+    ordered.insert(0, ordered.pop(ordered.index(PIN_FIRST)))
 
 def entry(f):
-    meta = existing.get(f, {})
-    parts = [f"file: {json.dumps(f, ensure_ascii=False)}"]
-    if meta.get("focus"):
-        parts.append(f"focus: {json.dumps(meta['focus'], ensure_ascii=False)}")
-    if meta.get("tone"):
-        parts.append(f"tone: {json.dumps(meta['tone'], ensure_ascii=False)}")
-    parts.append(f"credit: {json.dumps(meta.get('credit') or PLACEHOLDER, ensure_ascii=False)}")
-    return "    { " + ", ".join(parts) + " }"
+    if f in entries:
+        return "    " + entries[f]  # verbatim — your text, untouched
+    return ("    { file: %s, credit: %s }"
+            % (json.dumps(f, ensure_ascii=False), json.dumps(PLACEHOLDER, ensure_ascii=False)))
 
 lines = ",\n".join(entry(f) for f in ordered)
 out = f"const HERO_MANIFEST = [\n{lines}\n  ];"
 open(mainjs, "w").write(src[:m.start()] + out + src[m.end():])
+
 print(f"Updated HERO_MANIFEST: {len(ordered)} image(s)")
-new = [f for f in present if f not in order]
+if PIN_FIRST in ordered:
+    print(f"  Pinned first: {PIN_FIRST}")
 if new:
     print("  New (edit their placeholder credit in js/main.js): " + ", ".join(new))
+# A master that is renamed rather than deleted looks exactly like "old one
+# retired + new one added", so echo the credit we're dropping — otherwise the
+# prose is gone and the terminal is the only place it still exists.
+if retired:
+    print(f"  Retired {len(retired)} image(s) (no master left in originals/):")
+    for f in retired:
+        cm = re.search(r'credit:\s*("(?:[^"\\]|\\.)*")', entries[f])
+        print(f"    - {f}")
+        if cm:
+            print(f"        its credit was: {json.loads(cm.group(1))}")
+    print("      If you meant to RENAME one, paste that credit onto the new entry.")
 EOF
 
 node --check "$MAINJS" && echo "js/main.js syntax OK"

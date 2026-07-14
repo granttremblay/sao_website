@@ -340,13 +340,30 @@ master image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
 For each master the script writes a web `<name>.jpg` to `assets/images/hero_images/` — resized to
 at most **3200px** wide (never upscaled) at **quality 88**, deliberately with **no ~500KB cap** so
 the backdrops stay gorgeous on large / retina displays (galactic.jpg is ~1.6MB, and that's fine).
-It then regenerates `HERO_MANIFEST`, **preserving the credit text and the optional `tone` flag**
-you've written for existing images and giving brand-new ones a placeholder credit to edit. The
+It then refreshes `HERO_MANIFEST`. **Your existing entries are copied across verbatim** — the script
+reads only each entry's `file:` key, to know which image it is, and never rewrites the rest. So the
+credit you wrote, plus `tone`, `focus`, your field order and spacing, and any field added later, all
+survive byte-for-byte. Brand-new images are appended with a placeholder credit to edit. The
 `originals/` masters are gitignored — only the optimized `<name>.jpg` ships. Deleting a master and
 re-running retires that image from the hero.
 
-- **Reorder** by editing the order of `HERO_MANIFEST` entries (new images are appended at the end).
-- **Edit a credit** by changing its `credit:` string in `HERO_MANIFEST`.
+This matters because the script *used* to rebuild each entry from individually-parsed fields, which
+had two silent failure modes: a `credit:` the regex couldn't read became a placeholder, and an entry
+whose `file:` it couldn't read was dropped and then re-added as "new" — also with a placeholder. It
+exited 0 either way, so hand-written credits could vanish with no warning. The script now **refuses
+to write at all** (exit 1, naming the entry) if it can't identify one. If you ever see that, fix the
+entry's `file:` to a plain `file: "name.jpg"` and re-run — don't work around it.
+
+**`milkyway_backdrop.jpg` is pinned to the top of the manifest** on every run, so it's always the
+first frame a visitor sees. Change `PIN_FIRST` in `scripts/add_hero_images.sh` to pin a different
+one (or set it to `None` for no pinning). Everything else keeps the order you put it in.
+
+- **Reorder** by editing the order of `HERO_MANIFEST` entries (new images are appended at the end,
+  and the pinned image is always hoisted back to the front).
+- **Edit a credit** by changing its `credit:` string in `HERO_MANIFEST` — a re-run won't touch it.
+- **Renaming a master** looks exactly like "old image retired, new image added", so the old entry's
+  credit is dropped. The script prints the credit it is retiring for that reason — paste it onto the
+  new entry.
 - With a single image the arrow controls hide themselves automatically.
 
 ### Framing — the crop anchor, and per-image `focus`

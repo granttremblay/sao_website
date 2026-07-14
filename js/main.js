@@ -91,9 +91,13 @@
      whose subject sits mid-image (the Milky Way panorama's galactic bulge),
      since left-anchoring would crop it to empty sky on a phone.
 
-     To add/optimize images and regenerate this list, drop full-size files into
-     assets/images/hero_images/originals/ and run scripts/add_hero_images.sh
-     (it preserves the credit, tone, and focus you write here). */
+     To add/optimize images and refresh this list, drop full-size files into
+     assets/images/hero_images/originals/ and run scripts/add_hero_images.sh.
+     It copies existing entries across VERBATIM (it only reads each `file:` to
+     identify the entry), so anything you write here — credit, tone, focus,
+     field order, a field invented later — survives untouched; only brand-new
+     images are generated, with a placeholder credit. milkyway_backdrop.jpg is
+     pinned to the top on every run (PIN_FIRST in that script). */
 
   const HERO_DIR = "assets/images/hero_images/";
   const HERO_LOGO = {
@@ -102,12 +106,13 @@
   };
   const HERO_MANIFEST = [
     { file: "milkyway_backdrop.jpg", focus: "center", credit: "Our home galaxy, the Milky Way. Credit: ESO/S. Brunier" },
-    { file: "veritas.jpg", credit: "SAO's VERITAS Gamma-ray Observatory in Amado, AZ" },
+    { file: "veritas.jpg", credit: "SAO's VERITAS Gamma-ray Observatory in Amado, AZ", focus: "center" },
     { file: "chandra_launch.jpg", credit: "The launch of NASA's Chandra X-ray Observatory aboard the Space Shuttle Columbia, July 23, 1999. Credit: NASA" },
     { file: "galactic_center.jpg", credit: "Chandra's X-ray view of the Galactic Center. Credit: NASA/CXC" },
     { file: "mmt.jpg", credit: "SAO's MMT Telescope in Arizona. " },
-    { file: "sma.jpg", credit: "SAO's Submillimeter Array in Hawaii.", tone: "light" },
-    { file: "Screenshot 2026-07-01 at 4.12.49 PM.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." }
+    { file: "sma.jpg", credit: "SAO's Submillimeter Array in Hawaii.", focus: "center", tone: "light" },
+    { file: "bicep.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution].", focus: "center" },
+    { file: "greenland_telescope.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." }
   ];
 
   const slideshow = document.querySelector(".hero-slideshow");

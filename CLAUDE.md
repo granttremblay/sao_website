@@ -60,6 +60,17 @@ exist and is NOT this site).
   tune by eye, or crop the file's dead margin. Raster logos land oversized from
   media kits (TEMPO's was 3300px/958KB) — always `sips --resampleHeight 320` before shipping;
   keep the master in `assets/logos/originals/` (gitignored).
+- Hero backdrops: `HERO_MANIFEST` in js/main.js, refreshed by `scripts/add_hero_images.sh` from
+  masters in assets/images/hero_images/originals/ (gitignored). INVARIANT: the script copies
+  existing entries VERBATIM — it reads only each `file:` key to identify the entry and never
+  rewrites the rest, so credit/tone/focus/field-order/anything-added-later survive byte-for-byte.
+  Do not "improve" this back into rebuilding entries from parsed fields: that's what it used to do,
+  and it silently placeholdered any credit whose regex missed and silently dropped (then re-added as
+  "new") any entry whose file: didn't parse — exiting 0 while destroying hand-written prose. It now
+  hard-exits 1 naming the entry rather than write a manifest it can't fully read. `PIN_FIRST` (=
+  milkyway_backdrop.jpg) is hoisted to index 0 on every run; everything else keeps the author's
+  order, new images append. A RENAMED master is indistinguishable from retire+add, so the script
+  echoes the credit of anything it retires — that print is the only copy left.
 - Mosaic: `scripts/add_mosaic_images.sh` is the only sanctioned way to add tiles — it
   numbers tiles, regenerates `MOSAIC_MANIFEST` in js/main.js, and syntax-checks. In dev the
   mosaic auto-discovers via directory listing; on Pages it uses the manifest. The rotation
