@@ -129,6 +129,18 @@ exist and is NOT this site).
   `backdrop-filter`/`filter`/`transform` on `.site-header` itself (it becomes the containing
   block and pins the overlay inside the 60px bar — the frosted background lives on
   `.site-header::before` for exactly this reason).
+- Header layout: SAO logo LEFT, nav RIGHT (plain DOM order — an `order: 1` on `.brand` once
+  flipped this and was reverted on request; don't reintroduce it). The logo still only fades in
+  on scroll, via `.brand-visible` (an IntersectionObserver on `.hero-logo`, so the header lockup
+  never doubles the hero one). Two non-obvious constraints: (1) the full nav row (~700px) plus
+  the horizontal lockup (~215px) plus padding don't fit under ~960px, and the hamburger only
+  takes over at <=760px, so `.brand` is `display:none` in the 761-960px band — the nav must win,
+  since otherwise the Support CTA sits off-screen. This bites at page top too: `.brand` holds its
+  full width at `opacity: 0`. (The old nav-left layout merely hid this — the invisible logo was
+  the thing overflowing, so nobody saw it.) Hide `.brand`, not `.brand-logo`, or you leave a
+  focusable link with no accessible name. (2) `.site-nav` holds the right with its own
+  `margin-left: auto`, NOT the header's space-between — with `.brand` hidden it'd be a lone
+  space-between item, which sits at the START and would swing the nav left.
 
 ## Accessibility baseline (do not regress)
 

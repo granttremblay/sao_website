@@ -97,15 +97,16 @@ a { color: inherit; }
 }
 .site-header.scrolled::before { opacity: 1; }
 
+/* Logo left, nav right — plain DOM order, no `order` override. .brand is the
+   header's first child, so the scroll-in logo lands left; the nav holds the
+   right via its own margin-left:auto, and on mobile the header's space-between
+   puts the hamburger right (the nav overlay is position:fixed, out of flow).
+   A previous `order: 1` here flipped the two; it was reverted on request, so
+   don't reintroduce it. */
 .brand {
   display: flex;
   align-items: center;
   text-decoration: none;
-  /* Render last so the nav sits top-left and the scroll-in logo sits top-right.
-     Works at every breakpoint: on desktop the nav is the other in-flow item;
-     on mobile it's the hamburger (the nav overlay is position:fixed, out of
-     flow), so the toggle lands left and the logo right. */
-  order: 1;
 }
 
 .brand-logo {
@@ -129,6 +130,13 @@ a { color: inherit; }
   display: flex;
   align-items: center;
   gap: clamp(1rem, 2.5vw, 2.2rem);
+  /* Anchor the nav right on its own rather than leaning on the header's
+     space-between, which only pushes it over while a sibling exists to push
+     against: .brand is hidden in the 761-960px band below, and a lone
+     space-between item sits at the START, which would swing the nav left.
+     margin-left:auto holds it right whether or not the logo is there. (No
+     effect on mobile — .site-nav is position:fixed inset:0 there.) */
+  margin-left: auto;
 }
 
 .site-nav a {
@@ -168,6 +176,22 @@ a { color: inherit; }
 .site-nav .nav-cta::after { display: none; }
 
 .nav-toggle { display: none; }
+
+/* The full nav row and the scroll-in logo don't both fit under ~960px: the nav
+   needs ~700px, the horizontal lockup ~215px, plus the header's own padding.
+   The hamburger only takes over at/below 760px, so in the band between, one of
+   them has to give — and it's the logo, which is a decorative echo of the hero
+   lockup, not the nav, whose Support CTA would otherwise sit off screen.
+   This matters at the top of the page too, not just once scrolled: .brand still
+   occupies its full width at opacity:0, so it pushes the nav either way.
+   (The old `order: 1` layout hid this bug rather than fixing it — with the nav
+   first, the LOGO was the thing overflowing, and an invisible logo clipping
+   off-screen is something nobody ever notices.)
+   Hide .brand itself, not .brand-logo: an <a> whose only content is a
+   display:none image is a focusable link with no accessible name. */
+@media (min-width: 761px) and (max-width: 960px) {
+  .brand { display: none; }
+}
 
 /* ---------- Hero ---------- */
 
@@ -872,15 +896,15 @@ a { color: inherit; }
    padding (ink fills 67% of the canvas) while gmt.png is ~12% — which is why
    EHT at 38px looks much smaller than GMT at 40px. Judge by eye, not by number;
    trimming a file's padding is the other lever. */
-.impact-logo-astroai { --logo-h: 32px; }
+.impact-logo-astroai { --logo-h: 52px; }
 .impact-logo-scix { --logo-h: 26px; }
-.impact-logo-stars { --logo-h: 30px; }
-.impact-logo-tempo { --logo-h: 40px; }
+.impact-logo-stars { --logo-h: 50px; }
+.impact-logo-tempo { --logo-h: 60px; }
 .impact-logo-gmt { --logo-h: 60px; }
 .impact-logo-eht { --logo-h: 60px; }
-.impact-logo-chandra { --logo-h: 26px; }
-.impact-logo-lynx { --logo-h: 32px; }
-.impact-logo-mpc { --logo-h: 40px; }
+.impact-logo-chandra { --logo-h: 56px; }
+.impact-logo-lynx { --logo-h: 52px; }
+.impact-logo-mpc { --logo-h: 80px; }
 /* eht, sma and flwo are one CfA "next generation" lockup family and are all at
    60px so they read at the same weight (gmt matches them). Tempting to derive
    these from each file's ink ratio instead — don't bother, it doesn't work: the
@@ -893,7 +917,7 @@ a { color: inherit; }
 .impact-logo-veritas { --logo-h: 32px; }
 /* cxc is a bare mark rather than a wordmark, so it carries no text of its own
    to match against the family — sized to sit as a badge above its title. */
-.impact-logo-cxc { --logo-h: 34px; }
+.impact-logo-cxc { --logo-h: 64px; }
 
 /* ---------- Our Top Discoveries ----------
    Now the last item in #impact-accordion — same card, same header, same
