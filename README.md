@@ -267,12 +267,12 @@ re-running retires that image from the hero.
 - **Edit a credit** by changing its `credit:` string in `HERO_MANIFEST`.
 - With a single image the arrow controls hide themselves automatically.
 
-### Framing — put the subject bottom-left
+### Framing — the crop anchor, and per-image `focus`
 
-`.hero-slide` uses `background: cover` with **`background-position: left bottom`**, so the hero's
-crop is anchored to the image's **bottom-left corner**, which is always in frame at every viewport
-size. Compose (or pre-crop) masters accordingly: **the subject belongs in the lower-left of the
-frame.** `cover` only ever overflows one axis, and which one flips with the viewport, so a single
+`.hero-slide` uses `background: cover` with a default **`background-position: left bottom`**, so the
+hero's crop is anchored to the image's **bottom-left corner**, which stays in frame at every
+viewport size. That default suits the usual subject-in-the-lower-left photo (the telescopes, the
+launch). `cover` only ever overflows one axis, and which one flips with the viewport, so the single
 value covers both regimes:
 
 | Viewport | Overflows | What gets cropped | Roughly what's visible |
@@ -282,10 +282,25 @@ value covers both regimes:
 | Ultrawide (2560×1080) | vertically | the **top** of the frame | bottom ~64–84% |
 
 The phone case is why this matters: every backdrop is landscape (aspect 1.5–2.0) against a `100svh`
-hero, so a phone throws away about three quarters of the image's width. Centring used to cut the
-subject off the left edge. A dead-centre subject (e.g. the Milky Way panorama's galactic bulge)
-will read as empty sky on mobile — crop such a master left-of-centre before adding it. Don't set
-`background-position` back to `center`.
+hero, so a phone throws away about three quarters of the image's width, and centring used to cut
+the subject off the left edge.
+
+**To override the anchor for one image**, give its `HERO_MANIFEST` entry an optional `focus` — any
+CSS [`background-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-position)
+value. `js/main.js` applies it inline to that slide only; every other image keeps the `left bottom`
+default. This is how a mid-frame subject stays in shot:
+
+```js
+// The galactic bulge sits dead-centre, so left-anchoring showed empty sky on a phone.
+{ file: "milkyway_backdrop.jpg", focus: "center", credit: "…" },
+```
+
+Useful values: `"center"` (subject mid-frame), `"50% 100%"` (bottom-centre), `"right bottom"`,
+or a precise `"30% 40%"` — the percentages are *of the image*, so `30% 40%` holds the point 30%
+across / 40% down in view. `add_hero_images.sh` preserves `focus` across a regen, alongside
+`credit` and `tone`. Prefer `focus` over re-cropping a master — it's reversible and keeps the
+full-resolution frame intact. Don't change the CSS default back to `center`; that regresses every
+lower-left-subject image.
 
 ### Contrast (dark vs. light frames)
 

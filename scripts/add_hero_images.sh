@@ -16,8 +16,8 @@
 # These backdrops are the site's showpiece, so quality is prioritized over
 # file size: MAX_WIDTH is large and there is no ~500KB cap here (unlike other
 # images). Existing per-image credit lines (and the optional tone: "light" flag
-# for bright/snowy frames) are preserved; brand-new images get a placeholder
-# credit for you to edit in js/main.js.
+# for bright/snowy frames, and the optional focus: crop anchor) are preserved;
+# brand-new images get a placeholder credit for you to edit in js/main.js.
 #
 # The originals/ masters are gitignored — only the optimized <name>.jpg ships.
 
@@ -78,8 +78,9 @@ m = re.search(r"const HERO_MANIFEST = \[(.*?)\];", src, flags=re.S)
 assert m, "HERO_MANIFEST array not found in js/main.js"
 
 # Preserve existing credits (keyed by filename) and the existing display order.
-# Entries are { file, tone?, credit }; parse fields by key so the optional tone
-# survives a regen and field order doesn't matter.
+# Entries are { file, focus?, tone?, credit }; parse fields by key so the
+# optional tone/focus survive a regen and field order doesn't matter. Any new
+# optional field must be added here too, or a regen will silently drop it.
 existing, order = {}, []
 for obj in re.finditer(r'\{(.*?)\}', m.group(1), flags=re.S):
     body = obj.group(1)
@@ -89,8 +90,10 @@ for obj in re.finditer(r'\{(.*?)\}', m.group(1), flags=re.S):
     f = json.loads(fm.group(1))
     cm = re.search(r'credit:\s*("(?:[^"\\]|\\.)*")', body)
     tm = re.search(r'tone:\s*("(?:[^"\\]|\\.)*")', body)
+    xm = re.search(r'focus:\s*("(?:[^"\\]|\\.)*")', body)
     existing[f] = {"credit": json.loads(cm.group(1)) if cm else None,
-                   "tone": json.loads(tm.group(1)) if tm else None}
+                   "tone": json.loads(tm.group(1)) if tm else None,
+                   "focus": json.loads(xm.group(1)) if xm else None}
     order.append(f)
 
 PLACEHOLDER = "Placeholder credit — describe this image, then: Credit: [Name / Institution]."
@@ -99,6 +102,8 @@ ordered = [f for f in order if f in present] + [f for f in present if f not in o
 def entry(f):
     meta = existing.get(f, {})
     parts = [f"file: {json.dumps(f, ensure_ascii=False)}"]
+    if meta.get("focus"):
+        parts.append(f"focus: {json.dumps(meta['focus'], ensure_ascii=False)}")
     if meta.get("tone"):
         parts.append(f"tone: {json.dumps(meta['tone'], ensure_ascii=False)}")
     parts.append(f"credit: {json.dumps(meta.get('credit') or PLACEHOLDER, ensure_ascii=False)}")

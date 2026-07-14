@@ -78,14 +78,22 @@
   /* ---------- Hero backdrop ----------
      Static backdrops the visitor switches with the arrow controls — no
      auto-advance, no Ken Burns. Slides are built from HERO_MANIFEST below,
-     each { file, credit, tone? }, with credit shown in .hero-credit. Set
+     each { file, credit, tone?, focus? }, with credit shown in .hero-credit. Set
      tone: "light" on any image with a bright background (e.g. a snowy or
      white-sky frame) — it flips the logo, tagline, nav, and controls to dark
      ink for contrast (see applyTone below and .hero[data-tone] in the CSS).
-     Omit it (or use "dark") for the usual dark-sky frames. To add/optimize
-     images and regenerate this list, drop full-size files into
+     Omit it (or use "dark") for the usual dark-sky frames.
+
+     focus: the point of the image to hold in frame as `cover` crops it — any
+     CSS background-position value ("center", "50% 100%", "30% 40%", …). Omit
+     it to inherit the .hero-slide default of `left bottom`, which suits the
+     usual subject-in-the-lower-left photo; set focus: "center" for a frame
+     whose subject sits mid-image (the Milky Way panorama's galactic bulge),
+     since left-anchoring would crop it to empty sky on a phone.
+
+     To add/optimize images and regenerate this list, drop full-size files into
      assets/images/hero_images/originals/ and run scripts/add_hero_images.sh
-     (it preserves the credit and tone you write here). */
+     (it preserves the credit, tone, and focus you write here). */
 
   const HERO_DIR = "assets/images/hero_images/";
   const HERO_LOGO = {
@@ -93,7 +101,7 @@
     light: "assets/logos/si_AO_rgb_verical_color.svg"           // colour lockup w/ dark wordmark
   };
   const HERO_MANIFEST = [
-    { file: "milkyway_backdrop.jpg", credit: "Our home galaxy, the Milky Way. Credit: ESO/S. Brunier" },
+    { file: "milkyway_backdrop.jpg", focus: "center", credit: "Our home galaxy, the Milky Way. Credit: ESO/S. Brunier" },
     { file: "veritas.jpg", credit: "SAO's VERITAS Gamma-ray Observatory in Amado, AZ" },
     { file: "chandra_launch.jpg", credit: "The launch of NASA's Chandra X-ray Observatory aboard the Space Shuttle Columbia, July 23, 1999. Credit: NASA" },
     { file: "galactic_center.jpg", credit: "Chandra's X-ray view of the Galactic Center. Credit: NASA/CXC" },
@@ -124,11 +132,14 @@
       if (heroLogoImg) heroLogoImg.src = HERO_LOGO[t];
     };
 
-    // Build the slide layers from the manifest.
+    // Build the slide layers from the manifest. An entry's optional `focus`
+    // overrides the .hero-slide default crop anchor (`left bottom`) for that
+    // one image; anything else keeps the default.
     const slides = HERO_MANIFEST.map((item) => {
       const slide = document.createElement("div");
       slide.className = "hero-slide";
       slide.style.backgroundImage = `url("${HERO_DIR}${item.file}")`;
+      if (item.focus) slide.style.backgroundPosition = item.focus;
       slideshow.append(slide);
       return slide;
     });
