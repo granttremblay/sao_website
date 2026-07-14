@@ -218,11 +218,11 @@ step 2 is a copy-paste-and-edit of what it printed.
 
 **2. Add it in one or both of two places, matching an existing logo exactly:**
 
-> **Does the logo contain the organisation's name?** The accordion placement puts the logo *in place
-> of* the link's text name, so it only works for a lockup that names itself — a wordmark (`gmt.png`,
-> `chandra.png`) or a badge with the name inside it (`TEMPO-Logo.png`). A **mark with no text**
-> (`cxc.svg` is crossed telescopes and nothing else) would leave the link visually anonymous; put
-> that on a mission card instead, where the card's own `<h3>` still names the thing.
+> **Does the logo contain the organisation's name?** The `.impact-logo-row` placement puts the logo
+> *in place of* the link's text name, so it only works for a lockup that names itself — a wordmark
+> (`gmt.png`, `chandra.png`) or a badge with the name inside it (`TEMPO-Logo.png`). For a **mark with
+> no text** (`cxc.svg` is crossed telescopes and nothing else) that would leave the link anonymous,
+> so use the **mark + name lockup** instead — see "A bare mark" below.
 >
 > **Will it read against that specific photo/background?** Card logos sit on a photo with only a
 > drop-shadow to help. A white wordmark disappears on a bright frame — `sma.png` was tried on the
@@ -270,6 +270,27 @@ step 2 is a copy-paste-and-edit of what it printed.
   The script sets the `width`/`height` attributes from the real file. Keep them matching the logo's
   true aspect ratio (`sips -g pixelWidth -g pixelHeight file.png` if unsure) so the browser reserves
   the right space before the image loads — they are **not** the size control.
+
+- **A bare mark** (a logo with no wordmark, like `cxc.svg`) — same `.impact-logo-row`, but wrap the
+  mark and a real text name in an `.impact-mark-lockup` so the mark sits *beside* the name instead
+  of replacing it. The `<img>` takes `alt=""`, because the adjacent text already names the link and
+  an alt would just make a screen reader say it twice:
+
+  ```html
+  <li><a class="impact-link has-mark" href="https://cxc.harvard.edu/" target="_blank" rel="noopener">
+      <span class="impact-logo-row">
+        <span class="impact-mark-lockup">
+          <img class="impact-logo impact-logo-cxc" src="assets/logos/cxc.svg" alt="" width="40" height="40">
+          <span class="impact-link-name">Chandra X-ray Center</span>
+        </span>
+        <span class="impact-arrow" aria-hidden="true">↗</span>
+      </span>
+      <span class="impact-link-desc">One or two sentences about it.</span>
+    </a></li>
+  ```
+
+  It still uses the ordinary `--logo-h` knob, but size it against the ~1rem text next to it (`cxc`
+  is 34px) rather than against the wordmark family's 60px.
 
 ### Resizing a logo — use `--logo-h`
 

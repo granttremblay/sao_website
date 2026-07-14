@@ -38,10 +38,13 @@ exist and is NOT this site).
   knob without clobbering tuned values, and prints paste-ready markup. Placement + alt text are
   still a human call — see README "Adding a partner/mission logo". Two hard placement rules learned
   the hard way: (1) the accordion `has-logo` row REPLACES the link's text name, so it needs a logo
-  that names itself (a wordmark, or a badge with the name inside like TEMPO) — a bare mark like
-  cxc.svg would leave the link anonymous, so those belong on a mission card where the <h3> names it;
-  (2) card logos sit on a photo with only a drop-shadow, so a white wordmark dies on a bright frame
-  (sma.png washed out on the snowy SMA card and was pulled back to accordion-only).
+  that names itself (a wordmark, or a badge with the name inside like TEMPO). A bare mark with no
+  wordmark (cxc.svg = crossed telescopes, nothing else) would leave the link anonymous — use
+  `.impact-mark-lockup` instead, which sets the mark BESIDE a real text name inside the same
+  `.impact-logo-row` (img gets alt="" since the adjacent text names it). That's the pattern for any
+  future mark-only logo. (2) card logos sit on a photo with only a drop-shadow, so a white wordmark
+  dies on a bright frame (sma.png washed out on the snowy SMA card and was pulled back to
+  accordion-only).
   Two placements, both optional independently:
   `.card-logo` (uniform 46px, bottom-left of a mission card's `.card-art`) and the accordion's
   `.impact-link.flagship.has-logo` + `.impact-logo-row` (each logo gets its own

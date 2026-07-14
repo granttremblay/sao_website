@@ -846,6 +846,24 @@ a { color: inherit; }
 .impact-link.flagship .impact-link-name { font-size: 1.08rem; color: var(--si-yellow); }
 .impact-link.flagship:hover { background: rgba(56, 189, 248, .2); }
 
+/* Mark + name lockup — for a logo that does NOT say what it is.
+   The .impact-logo-row below puts a logo *in place of* the link's text name,
+   which only works for a lockup that names itself (a wordmark like gmt.png, or
+   a badge with the name inside it like TEMPO's). A bare mark — cxc.svg is
+   crossed telescopes and nothing else — would leave the link anonymous. So set
+   the mark BESIDE the name rather than instead of it: the mark keeps the same
+   --logo-h knob as any other logo, and the text still carries the name. Its
+   <img> takes alt="" because the adjacent text already names the link (an alt
+   here would just make a screen reader say it twice). Reach for this whenever a
+   new logo is a mark without a wordmark. */
+.impact-mark-lockup {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  min-width: 0;
+}
+.impact-mark-lockup .impact-link-name { margin-bottom: 0; }
+
 /* Brand-logo flagship links (AstroAI, NASA SciX) — logo in place of the title. */
 .impact-logo-row {
   display: flex;
@@ -888,10 +906,13 @@ a { color: inherit; }
    so equal ink height still looked unequal. Set by eye. */
 .impact-logo-flwo { --logo-h: 60px; }
 .impact-logo-sma { --logo-h: 60px; }
-/* veritas + cxc ship only as .card-logo (uniform 46px) and have no accordion
-   link yet; these knobs sit ready in case one is ever added. */
+/* veritas ships only as a .card-logo (uniform 46px) and has no accordion link
+   yet; this knob sits ready in case one is ever added. */
 .impact-logo-veritas { --logo-h: 32px; }
-.impact-logo-cxc { --logo-h: 32px; }
+/* cxc is a bare mark set beside its name (see .impact-mark-lockup), not in
+   place of it — sized to sit against ~1rem text rather than to match the
+   wordmark family. */
+.impact-logo-cxc { --logo-h: 34px; }
 
 /* ---------- Our Top Discoveries ----------
    Now the last item in #impact-accordion — same card, same header, same
