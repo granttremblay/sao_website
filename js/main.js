@@ -111,8 +111,8 @@
     { file: "galactic_center.jpg", credit: "Chandra's X-ray view of the Galactic Center. Credit: NASA/CXC" },
     { file: "mmt.jpg", credit: "SAO's MMT Telescope in Arizona. " },
     { file: "sma.jpg", credit: "SAO's Submillimeter Array in Hawaii.", focus: "center", tone: "light" },
-    { file: "bicep.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution].", focus: "center" },
-    { file: "greenland_telescope.jpg", credit: "Placeholder credit — describe this image, then: Credit: [Name / Institution]." }
+    { file: "bicep.jpg", credit: "The South Pole Telescope in Antarctica Credit: NSF", focus: "center" },
+    { file: "greenland_telescope.jpg", credit: "SAO's Greenland Telescope at Pituffik Space Base in Greenland: Credit: SAO" }
   ];
 
   const slideshow = document.querySelector(".hero-slideshow");
