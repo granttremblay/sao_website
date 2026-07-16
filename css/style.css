@@ -205,6 +205,13 @@ a { color: inherit; }
   overflow: hidden;
   background: var(--si-blue-deepest);
   color: var(--white);
+  /* Text scrim knobs — see .hero-content::before. Strength is the peak alpha at
+     the centre of the halo; the whole gradient scales off it, so this single
+     number is the only thing to turn. The colour flips with the hero tone so the
+     halo always pushes the backdrop AWAY from the ink: navy behind white text,
+     paper behind the dark-ink light-tone lockup. */
+  --hero-scrim: .35;
+  --hero-scrim-rgb: 5 13 36;
 }
 
 /* ----- Backdrop slideshow ----- */
@@ -237,11 +244,27 @@ a { color: inherit; }
 /* Static backdrop — the visitor crossfades between images with the arrows. */
 .hero-slide.is-active { opacity: 1; }
 
-/* No image-wide darkening overlay — backdrops show as-is. Legibility of the
-   centred logo/tagline comes from text-shadows on the text itself (see
-   .hero-title / .hero-sub), which protect the glyphs without tinting the photo. */
+/* Still no IMAGE-WIDE darkening overlay — backdrops show as-is at the edges.
+   Legibility of the centred lockup/tagline comes from a scrim fitted to the text
+   block itself (.hero-content::before) plus the text-shadows below. A flat tint
+   over the whole frame was tried and rejected: it dulls every backdrop to pay for
+   the two that need help. Measured, the fitted halo is strictly better anyway —
+   it needs LESS peak darkening than a wide one (full strength sits where the text
+   is, instead of being spread thin), and leaves ~60% of the frame untouched. */
 
-/* Image credit / caption — bottom-left, small but readable. */
+/* Image credit / caption — bottom-left, small but readable.
+   This caption sits OUTSIDE the .hero-content scrim: the halo is centred on the
+   text block, the caption is pinned to a corner — and a corner is exactly where
+   these backdrops keep their brightest pixels. As plain text over the Greenland
+   frame's snow it measured 1.02:1. Invisible. A text-shadow doesn't fix that and
+   isn't a contrast mechanism WCAG recognises.
+   So it carries its own background. That's what makes it reliable: the pill IS
+   the backdrop, so contrast is fixed no matter what pixels land under it. It
+   still flips colour with the tone — not for contrast (either pill clears AA on
+   its own) but to stay consistent with the .hero-arrow controls sharing this
+   corner band. Measured worst cases, i.e. the pill over the most hostile
+   backdrop possible: dark pill over pure white 5.47:1, light pill over pure
+   black 8.47:1. Both clear AA whatever the photo does. */
 .hero-credit {
   position: absolute;
   left: clamp(1rem, 3vw, 2rem);
@@ -249,14 +272,27 @@ a { color: inherit; }
   z-index: 3;
   max-width: min(60ch, 70vw);
   margin: 0;
+  padding: .4rem .75rem;
+  border: 1px solid rgb(255 255 255 / .18);
+  border-radius: 999px;
+  background: rgb(5 13 36 / .65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   font-size: .72rem;
   line-height: 1.35;
   letter-spacing: .01em;
-  color: rgba(255, 255, 255, .82);
-  text-shadow: 0 1px 6px rgba(0, 0, 0, .85);
+  color: rgb(255 255 255 / .92);
   text-align: left;
-  transition: opacity .8s ease, color .5s ease, text-shadow .5s ease;
+  /* It sits at z-index 3, ABOVE .hero-content's buttons. As bare text that was
+     survivable; once it grew a padded box it started swallowing clicks on the
+     ghost button underneath at narrow widths. It's a caption — it should never
+     be a hit-test target at any size. */
+  pointer-events: none;
+  transition: opacity .8s ease, background .5s ease, border-color .5s ease, color .5s ease;
 }
+/* A manifest entry with no credit sets textContent to "" — without this it would
+   still paint as a bare empty pill in the corner. */
+.hero-credit:empty { display: none; }
 
 /* Backdrop arrow controls — bottom-right pair, small and unobtrusive. */
 .hero-nav {
@@ -315,6 +351,46 @@ a { color: inherit; }
   z-index: 2;
   max-width: 880px;
   padding: calc(var(--header-h) + 4vh) 1.5rem 4rem;
+}
+
+/* ----- Text scrim -----
+   A soft halo that darkens ONLY the band the text sits in, so the corners of the
+   photo keep their full brightness. It rides on .hero-content because that box
+   already wraps exactly the logo + title + tagline + buttons, at every viewport —
+   so the halo tracks the text for free, with no JS and no hardcoded geometry.
+
+   Two things that look like details but are not:
+
+   (1) z-index: -1 paints this BETWEEN the photo and the text. It works because
+       .hero-content is position:relative + z-index:2, so it forms a stacking
+       context and a negative child can't escape below .hero-slideshow. Same
+       paint-order trap as .impact-acc-art — don't remove that z-index:2.
+   (2) The stop list is an eased (smootherstep) falloff, not a linear one. A
+       linear ramp has a visible shoulder where the flat centre meets the slope,
+       and that shoulder is what reads as "an ellipse drawn on the photo". These
+       stops trace a smooth curve to zero, so there's no edge to see — same
+       result as blurring it, at no repaint cost. Each stop is a fixed fraction
+       of --hero-scrim, so the whole curve scales from that one knob.
+
+   The negative horizontal inset lets the falloff finish outside .hero-content
+   rather than being clipped mid-slope by its box. */
+.hero-content::before {
+  content: "";
+  position: absolute;
+  inset: -12% -28%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse closest-side at 50% 50%,
+      rgb(var(--hero-scrim-rgb) / calc(var(--hero-scrim, 0) * 1))     0%,
+      rgb(var(--hero-scrim-rgb) / calc(var(--hero-scrim, 0) * 1))    22%,
+      rgb(var(--hero-scrim-rgb) / calc(var(--hero-scrim, 0) * .916)) 40%,
+      rgb(var(--hero-scrim-rgb) / calc(var(--hero-scrim, 0) * .751)) 50%,
+      rgb(var(--hero-scrim-rgb) / calc(var(--hero-scrim, 0) * .524)) 60%,
+      rgb(var(--hero-scrim-rgb) / calc(var(--hero-scrim, 0) * .290)) 70%,
+      rgb(var(--hero-scrim-rgb) / calc(var(--hero-scrim, 0) * .111)) 80%,
+      rgb(var(--hero-scrim-rgb) / calc(var(--hero-scrim, 0) * .017)) 90%,
+      rgb(var(--hero-scrim-rgb) / 0) 100%);
+  transition: background .5s ease;
 }
 
 .hero-logo { margin-bottom: 2rem; }
@@ -407,6 +483,10 @@ a { color: inherit; }
    the frosted scrolled header stays white). The logo image itself is swapped
    to the colour lockup in JS. Colour transitions live on the base rules so the
    flip cross-fades with the 1.1s slide change. */
+/* A navy halo behind navy ink would push the backdrop TOWARD the text and make
+   things worse, so the scrim flips to paper on a light frame. */
+.hero[data-tone="light"] { --hero-scrim-rgb: 247 249 252; }
+
 .hero[data-tone="light"] .hero-title {
   color: var(--si-blue-deep);
   filter: drop-shadow(0 2px 14px rgba(255, 255, 255, .55));
@@ -419,8 +499,9 @@ a { color: inherit; }
   text-shadow: 0 1px 3px rgba(255, 255, 255, .6), 0 2px 16px rgba(255, 255, 255, .5);
 }
 .hero[data-tone="light"] .hero-credit {
-  color: rgba(10, 22, 56, .9);
-  text-shadow: 0 1px 6px rgba(255, 255, 255, .85);
+  background: rgb(247 249 252 / .72);
+  border-color: rgb(10 22 56 / .18);
+  color: var(--si-blue-deep);
 }
 .hero[data-tone="light"] .hero-logo img {
   filter: drop-shadow(0 2px 10px rgba(255, 255, 255, .7)) drop-shadow(0 6px 30px rgba(255, 255, 255, .5));
@@ -482,6 +563,15 @@ a { color: inherit; }
     bottom: 4.2rem;
     max-width: calc(100vw - 2rem);
   }
+  /* ...but lifting it only moved the collision UP into the hero's own buttons.
+     At ~320px the tagline wraps to six lines and .hero-actions stacks, so
+     .hero-content grows past the viewport and its bottom edge reaches the
+     caption — which, at z-index 3, painted straight over the "Our Story" button
+     and hid it. The caption can't drop below the buttons (it's anchored to the
+     corner by design), so the content reserves the room instead: the longest
+     credit in the manifest wraps to 3 lines here (~61px) and sits 4.2rem up,
+     so ~9rem clears it with a margin to spare. */
+  .hero-content { padding-bottom: 9rem; }
 }
 
 /* ---------- Stats band ---------- */

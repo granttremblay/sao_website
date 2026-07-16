@@ -403,20 +403,82 @@ lower-left-subject image.
 
 ### Contrast (dark vs. light frames)
 
-There is **no darkening overlay** — backdrops show as-is. For the usual dark-sky frames, legibility
-of the centred logo/tagline comes from text-shadows on the text itself (`.hero-logo img`,
-`.hero-title`, `.hero-sub`), which protect the glyphs without tinting the photo.
+There is **no image-wide darkening overlay** — the edges of every backdrop show as-is. Legibility of
+the centred lockup/tagline comes from two things: text-shadows on the text itself (`.hero-logo img`,
+`.hero-title`, `.hero-sub`), and a **scrim fitted to the text block** (`.hero-content::before`).
+
+The scrim rides on `.hero-content` because that box already wraps exactly the logo + title + tagline
++ buttons at every viewport, so the halo tracks the text with no JS and no hardcoded geometry. Two
+knobs, both on `.hero`:
+
+```css
+--hero-scrim: .35;          /* peak alpha at the centre — the only number to turn */
+--hero-scrim-rgb: 5 13 36;  /* flips to `247 249 252` on a light frame */
+```
+
+Every gradient stop is a fixed fraction of `--hero-scrim`, so the whole curve scales off that one
+value. Three things here are deliberate:
+
+- **The stops are an eased (smootherstep) falloff, not linear.** A linear ramp leaves a visible
+  shoulder where the flat centre meets the slope, and *that shoulder is what reads as "an ellipse
+  drawn on the photo"*. The eased curve has no edge to see — same result as blurring it, at no
+  repaint cost. Don't flatten it back to two stops.
+- **`z-index: -1` puts it between the photo and the text**, and only works because `.hero-content`
+  is `position: relative` + `z-index: 2` and therefore forms a stacking context. Remove that
+  `z-index: 2` and the scrim drops behind the backdrop. (Same paint-order trap as `.impact-acc-art`.)
+- **Fitted beats wide.** A big soft ellipse was tried first: to reach the tagline's corners it had to
+  cover the whole frame, which dulled every backdrop. Measured, the fitted halo needs *less* peak
+  darkening (full strength sits where the text is instead of being spread thin) and leaves ~60% of
+  the frame untouched. Don't "simplify" it into a full-frame tint.
+
+The scrim deliberately does **not** reach the `.hero-credit` in the bottom-left corner — the halo is
+centred on the text block, and a corner is exactly where these backdrops keep their brightest pixels.
+So the caption carries **its own pill background** instead (`background` + `backdrop-filter` on
+`.hero-credit`). That's what makes it reliable: the pill *is* the backdrop, so contrast is fixed no
+matter what's underneath — over the Greenland snow the caption went from 1.02:1 to 5.55:1. It flips
+colour with the tone to match the `.hero-arrow` controls sharing that corner, but either pill clears
+AA on its own (dark over pure white 5.47:1, light over pure black 8.47:1).
+
+Two things that pill needs, both learned the hard way:
+
+- **`pointer-events: none`.** It's at `z-index: 3`, above `.hero-content` — as bare text that was
+  survivable, but a padded box swallows clicks on the ghost button underneath at narrow widths.
+- **`.hero-content { padding-bottom: 9rem }` below 900px.** At ~320px the tagline wraps to six lines
+  and the buttons stack, so `.hero-content` grows past the viewport until its bottom edge reaches the
+  caption — which then paints straight over "Our Story" and hides it. The caption is anchored to the
+  corner, so the content reserves the room instead. If you add a credit longer than the Chandra one
+  (3 lines at 320px), re-check that clearance.
+- **`.hero-credit:empty { display: none }`** — a manifest entry with no `credit` sets `textContent`
+  to `""`, which would otherwise paint as a bare empty pill.
 
 For a **bright frame** (a snowy scene, a white sky) white text washes out, so tag that image
-`tone: "light"` in `HERO_MANIFEST`. On that slide `applyTone()` in `js/main.js` sets
+`tone: "light"` in `HERO_MANIFEST`. The scrim follows the tone — a navy halo behind navy ink would
+push the backdrop *toward* the text and make it worse, so `--hero-scrim-rgb` flips to paper and the
+halo brightens instead of darkens. The rule is that the scrim always pushes the backdrop *away* from
+the ink. On that slide `applyTone()` in `js/main.js` sets
 `.hero[data-tone="light"]` (and `[data-hero-tone]` on the header) and swaps the hero lockup to the
 colour logo (`si_AO_rgb_verical_color.svg`); the CSS block under `/* Light-tone hero */` flips the
 logo halo, title, tagline, credit, arrows, ghost button, and the transparent nav to dark navy ink.
 The header only follows the frame while it's transparent (`:not(.scrolled)`), and the dark mobile
 menu keeps white links (`.site-nav:not(.open)`) and a white close ✕ (`.nav-toggle:not([aria-expanded="true"])`).
 Colour transitions live on the base rules so the flip cross-fades with the 1.1s slide change.
-Default (no `tone`, or `"dark"`) keeps the white treatment. Re-run axe after adding a light frame —
-the point is that both tones pass contrast.
+Default (no `tone`, or `"dark"`) keeps the white treatment.
+
+**axe cannot check this.** It has no idea what's inside a background image, so hero text comes back
+as `incomplete`, not `pass` — a clean axe run says nothing about whether a backdrop is legible. The
+only way to know is to measure the composited pixels: draw the image to a canvas with the same
+`cover` crop and `focus`, composite the scrim, and sample the worst-case luminance under
+`.hero-title` / `.hero-sub` / `.hero-credit`.
+
+Two traps when judging a new frame:
+
+- **`tone` is per-image, but the crop is per-viewport.** The same photo can present dark sky at
+  desktop and bright snow at 320px, so a `tone` that's right at one width can be actively wrong at
+  the other — it flips the ink to navy *and* the scrim to paper, both in the wrong direction. Check
+  a new light frame at both ends before trusting it.
+- **A frame that needs a lot of scrim is telling you it's the wrong photo.** A busy, bright,
+  high-contrast subject sitting behind centred text can't be rescued by any strength that still
+  leaves the photo worth showing. Recrop or replace it instead.
 
 ## Adding to the rotating stats
 
