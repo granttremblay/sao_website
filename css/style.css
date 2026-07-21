@@ -998,6 +998,10 @@ a { color: inherit; }
 .impact-logo-chandra { --logo-h: 56px; }
 .impact-logo-lynx { --logo-h: 52px; }
 .impact-logo-mpc { --logo-h: 80px; }
+.impact-logo-eventhorizon { --logo-h: 32px; }
+.impact-logo-lynx-logo { --logo-h: 32px; }
+.impact-logo-minor-planet-center { --logo-h: 32px; }
+.impact-logo-tempo-logo { --logo-h: 32px; }
 /* eht, sma and flwo are one CfA "next generation" lockup family and are all at
    60px so they read at the same weight (gmt matches them). Tempting to derive
    these from each file's ink ratio instead — don't bother, it doesn't work: the
