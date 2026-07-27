@@ -39,6 +39,10 @@ scripts/
 
 Heavy source images (original PNGs/screenshots) stay local and are gitignored; the repo only ships web-optimized JPEGs. See `.gitignore`.
 
+## Header logo → back to top
+
+The scroll-in SAO lockup (`a.brand`) links to `href="#top"`, which scrolls the page back to the top. **Do not** put `id="top"` on `.site-header` (or any element) — the header is `position: fixed`, so an `#top` that resolves to it is always "in view" and the click does nothing. With no element owning that id, the browser falls back to the spec behavior of scrolling to the top of the document (smoothly, via `html { scroll-behavior: smooth }`). No JS involved.
+
 ## Adding images to the mosaic rotation
 
 1. Drop images — any size, any filename (jpg/png/heic/webp/tiff) — into `assets/images/mosaic_sources/`
@@ -119,9 +123,12 @@ Planet Center, HITRAN, AstroAI, NASA SciX/ADS) get the accent treatment; AstroAI
 additionally carry `.has-logo` and show a brand SVG (`astroAI_without_encoder.svg`,
 `scix_light.svg`, `STARS_Logo_Lockup_Horizontal_White.svg` — light variants for the dark card) in
 place of the text title, sized via `.impact-logo-astroai` / `.impact-logo-scix` /
-`.impact-logo-stars`. **Keep the outbound URLs working** — they point at real resources (MPC,
-HITRAN, AstroAI, scixplorer.org, chandra.si.edu, central-engineering, science-education-department,
-etc.).
+`.impact-logo-stars`. The "Defending Our Home Planet" row is fully logo'd: Minor Planet Center
+(`planetary_defense_network.svg`, the Planetary Defense Nexus wordmark), TEMPO, Parker Solar Probe
+(`parker_solar_probe.png`, a round mission patch — space-weather framing), HITRAN, and Greenland
+(`greenland_telescope.png`, a circular badge). **Keep the outbound URLs working** — they point at
+real resources (MPC, HITRAN, AstroAI, Parker at science.nasa.gov, scixplorer.org, chandra.si.edu,
+central-engineering, science-education-department, etc.).
 
 Each row's `.impact-acc-art` image (set via inline `background-image`) fades into the navy via a
 `mask-image` — the image itself fades to transparent so the card's own background shows through, no
