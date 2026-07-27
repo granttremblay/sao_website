@@ -143,9 +143,10 @@ exist and is NOT this site).
 - Header layout: SAO logo LEFT, nav RIGHT (plain DOM order — an `order: 1` on `.brand` once
   flipped this and was reverted on request; don't reintroduce it). The logo still only fades in
   on scroll, via `.brand-visible` (an IntersectionObserver on `.hero-logo`, so the header lockup
-  never doubles the hero one). Two non-obvious constraints: (1) the full nav row (~700px) plus
-  the horizontal lockup (~215px) plus padding don't fit under ~960px, and the hamburger only
-  takes over at <=760px, so `.brand` is `display:none` in the 761-960px band — the nav must win,
+  never doubles the hero one). Two non-obvious constraints: (1) the full nav row (~860px, since the
+  external "Careers" link was added alongside Support) plus the horizontal lockup (~215px) plus
+  padding don't fit until ~1150px, and the hamburger only takes over at <=880px (the nav row alone
+  needs ~860px to sit uncramped), so `.brand` is `display:none` in the 881-1150px band — the nav must win,
   since otherwise the Support CTA sits off-screen. This bites at page top too: `.brand` holds its
   full width at `opacity: 0`. (The old nav-left layout merely hid this — the invisible logo was
   the thing overflowing, so nobody saw it.) Hide `.brand`, not `.brand-logo`, or you leave a

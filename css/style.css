@@ -160,7 +160,7 @@ a {
   gap: clamp(1rem, 2.5vw, 2.2rem);
   /* Anchor the nav right on its own rather than leaning on the header's
      space-between, which only pushes it over while a sibling exists to push
-     against: .brand is hidden in the 761-960px band below, and a lone
+     against: .brand is hidden in the 881-1150px band below, and a lone
      space-between item sits at the START, which would swing the nav left.
      margin-left:auto holds it right whether or not the logo is there. (No
      effect on mobile — .site-nav is position:fixed inset:0 there.) */
@@ -219,10 +219,11 @@ a {
   display: none;
 }
 
-/* The full nav row and the scroll-in logo don't both fit under ~960px: the nav
-   needs ~700px, the horizontal lockup ~215px, plus the header's own padding.
-   The hamburger only takes over at/below 760px, so in the band between, one of
-   them has to give — and it's the logo, which is a decorative echo of the hero
+/* The full nav row and the scroll-in logo don't both fit until ~1150px: the nav
+   needs ~860px (five section links + Careers + the Support CTA), the horizontal
+   lockup ~215px, plus the header's own padding. The hamburger takes over at/below
+   880px (the nav row alone needs ~860px to sit uncramped), so in the band between,
+   one of them has to give — and it's the logo, a decorative echo of the hero
    lockup, not the nav, whose Support CTA would otherwise sit off screen.
    This matters at the top of the page too, not just once scrolled: .brand still
    occupies its full width at opacity:0, so it pushes the nav either way.
@@ -231,7 +232,7 @@ a {
    off-screen is something nobody ever notices.)
    Hide .brand itself, not .brand-logo: an <a> whose only content is a
    display:none image is a focusable link with no accessible name. */
-@media (min-width: 761px) and (max-width: 960px) {
+@media (min-width: 881px) and (max-width: 1150px) {
   .brand {
     display: none;
   }
@@ -1915,7 +1916,7 @@ a {
 
 /* ---------- Mobile nav ---------- */
 
-@media (max-width: 760px) {
+@media (max-width: 880px) {
   .nav-toggle {
     display: flex;
     flex-direction: column;
@@ -1972,7 +1973,12 @@ a {
   .brand-logo {
     height: 38px;
   }
+}
 
+/* Timeline and stats collapse to a single column on real phones — kept at the
+   original 760px breakpoint, independent of the wider 880px nav-hamburger
+   breakpoint above (which had to grow when the Careers link widened the nav). */
+@media (max-width: 760px) {
   .timeline-item {
     grid-template-columns: 1fr;
   }
