@@ -1322,6 +1322,11 @@ a {
 .impact-logo-greenland {
   --logo-h: 54px;
 }
+/* hitran is a square badge (molecules + spectrometer + vertical wordmark) —
+   sized like the other square badges to sit as a coin above its title. */
+.impact-logo-hitran {
+  --logo-h: 60px;
+}
 
 /* ---------- Our Top Discoveries ----------
    Now the last item in #impact-accordion — same card, same header, same
