@@ -10,7 +10,7 @@
 # Each image is center-cropped to 800x360 JPEG (quality auto-stepped to stay
 # under ~500KB) — the same aspect used by assets/images/impact/*.jpg, since
 # both the accordion header art and the discovery-row thumbnails share that
-# convention (see .impact-acc-art / .discovery-row-art in css/style.css).
+# convention (see .impact-acc-art / .discovery-row-art in assets/css/style_v5.css).
 #
 # "Our Top Discoveries" is now static HTML (index.html, inside #impact-accordion,
 # the last .impact-item) — there's no DISCOVERIES JS array to stub anymore.
@@ -20,7 +20,7 @@
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 DISC="$REPO/assets/images/discoveries"
 ORIG="$DISC/originals"
 

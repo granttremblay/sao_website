@@ -10,11 +10,11 @@ Deployed via GitHub Pages from the `main` branch root — every push to `main` g
 
 ```
 index.html                  Single-page site (hero, stats, impact, missions, history, CfA, footer)
-css/style.css               All styles; brand colors as CSS variables in :root
-js/main.js                  Interactions: nav, scroll reveals, hero backdrops,
+assets/
+  css/style_v5.css          All styles; brand colors as CSS variables in :root
+  js/main_v4.js             Interactions: nav, scroll reveals, hero backdrops,
                             rotating stat, photo mosaic, news feed,
                             impact accordion (incl. Our Top Discoveries), timeline
-assets/
   logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI, NASA SciX (SVG)
   data/news.json            CfA news feed data (auto-generated — do not hand-edit)
   images/                   Web-optimized JPEGs used by the site
@@ -27,21 +27,43 @@ assets/
     mosaic_sources/         Raw drop folder for new mosaic images (gitignored)
     news/                   Cached CfA news images (auto-generated)
   favicon.svg               Smithsonian sunburst (+ PNG fallbacks)
-scripts/
-  add_mosaic_images.sh      Mosaic image pipeline (see below)
-  add_hero_images.sh        Hero backdrop image pipeline (see below)
-  add_discovery_images.sh   Our Top Discoveries image pipeline (see below)
-  add_logo.sh               Partner/mission logo pipeline + --logo-h knob (see below)
-  update_news.py            CfA news feed scraper (see below)
+  scripts/
+    add_mosaic_images.sh    Mosaic image pipeline (see below)
+    add_hero_images.sh      Hero backdrop image pipeline (see below)
+    add_discovery_images.sh Our Top Discoveries image pipeline (see below)
+    add_logo.sh             Partner/mission logo pipeline + --logo-h knob (see below)
+    update_news.py          CfA news feed scraper (see below)
+    refresh_news.sh         Cron wrapper for update_news.py (self-hosted deploys)
 .github/workflows/
   update-news.yml           Daily Action that refreshes the news feed
 ```
 
 Heavy source images (original PNGs/screenshots) stay local and are gitignored; the repo only ships web-optimized JPEGs. See `.gitignore`.
 
+### Why the CSS and JS carry version numbers
+
+`assets/css/style_v5.css` and `assets/js/main_v4.js` sit under `assets/` with versioned filenames
+to match the Smithsonian (sao.si.edu) deployment of this site, which serves `assets/css/style_v4.css`
+and `assets/js/main_v3.js` and cache-busts by hand. Renaming the file *is* the cache-bust: a new
+filename is a new URL, so returning visitors can never get old CSS against new HTML. **If you make
+a breaking change to either file for that deployment, ship it under the next version number** rather
+than editing in place — otherwise their cached copies and your markup drift apart.
+
+All references are **relative** (`assets/css/style_v5.css`, not `/assets/...`). That matters: this
+site lives at a sub-path (`granttremblay.github.io/sao_website/`), where a leading slash would
+resolve to the domain root and 404. Relative paths resolve correctly both here and at a domain-root
+deployment, so the same file works for both. Don't "tidy" them into absolute paths.
+
 ## Header logo → back to top
 
 The scroll-in SAO lockup (`a.brand`) links to `href="#top"`, which scrolls the page back to the top. **Do not** put `id="top"` on `.site-header` (or any element) — the header is `position: fixed`, so an `#top` that resolves to it is always "in view" and the click does nothing. With no element owning that id, the browser falls back to the spec behavior of scrolling to the top of the document (smoothly, via `html { scroll-behavior: smooth }`). No JS involved.
+
+The header runs **nav left, logo right**, and that is the source order (`<nav>` then `a.brand`)
+— not a CSS `order` flip. Reordering visually while leaving the DOM alone makes keyboard focus
+jump to the far-right element and back again (WCAG 2.4.3 / 1.3.2); there is no positive
+`tabindex` anywhere on the page, so DOM order is the tab order and the two stay in step. If the
+logo needs to move again, move the element. See CLAUDE.md for the breakpoint arithmetic that
+hangs off this.
 
 ## Adding images to the mosaic rotation
 
@@ -49,16 +71,16 @@ The scroll-in SAO lockup (`a.brand`) links to `href="#top"`, which scrolls the p
 2. Run:
 
    ```bash
-   ./scripts/add_mosaic_images.sh          # process + update manifest locally
-   ./scripts/add_mosaic_images.sh --push   # ...and commit + push to deploy
+   ./assets/scripts/add_mosaic_images.sh          # process + update manifest locally
+   ./assets/scripts/add_mosaic_images.sh --push   # ...and commit + push to deploy
    ```
 
-The script center-crops each image to a 600×600 JPEG tile named `mosaic_NN.jpg`, regenerates the `MOSAIC_MANIFEST` array in `js/main.js`, syntax-checks the result, and moves processed sources to `mosaic_sources/processed/`. It also rejects images that already exist in the roster under a different filename (perceptual hash comparison) — the on-page rotation guarantees no image ever appears in two grid tiles at once, but it can only do that if each image exists exactly once. macOS only (uses `sips`; duplicate detection needs Pillow, and is skipped gracefully without it).
+The script center-crops each image to a 600×600 JPEG tile named `mosaic_NN.jpg`, regenerates the `MOSAIC_MANIFEST` array in `assets/js/main_v4.js`, syntax-checks the result, and moves processed sources to `mosaic_sources/processed/`. It also rejects images that already exist in the roster under a different filename (perceptual hash comparison) — the on-page rotation guarantees no image ever appears in two grid tiles at once, but it can only do that if each image exists exactly once. macOS only (uses `sips`; duplicate detection needs Pillow, and is skipped gracefully without it).
 
 ## The news feed (Impact section)
 
 "News from the Smithsonian Astrophysical Observatory" renders from `assets/data/news.json`, which
-`scripts/update_news.py` builds by scraping the Recent News Releases list on
+`assets/scripts/update_news.py` builds by scraping the Recent News Releases list on
 [cfa.harvard.edu/news](https://www.cfa.harvard.edu/news) (top 6 items, images downloaded and
 optimized into `assets/images/news/`). A scheduled GitHub Action
 (`.github/workflows/update-news.yml`) runs it daily and commits any changes, so the live site
@@ -69,19 +91,22 @@ the script exits nonzero rather than writing a bad feed — check the Action log
 ### Keeping the feed fresh on a self-hosted server (not GitHub Pages)
 
 The feed is just two static things the browser fetches — `assets/data/news.json` and
-`assets/images/news/*.jpg` — and `update_news.py` writes them relative to its own location
-(`scripts/../assets/...`). So on a server that hosts this site outside GitHub Pages, **no code,
-HTML, or rebuild is needed** — just run the scraper on a daily cron so it regenerates those files
-in place. As long as this `scripts/` folder ships inside (or one level above `assets/` in) the
-docroot, the refresh lands directly in the live files.
+`assets/images/news/*.jpg` — and `update_news.py` writes them relative to its own location: it
+resolves the site root as `Path(__file__).parent.parent.parent` (i.e. `assets/scripts/../../`) and
+writes into `<root>/assets/...` from there. So on a server that hosts this site outside GitHub
+Pages, **no code, HTML, or rebuild is needed** — just run the scraper on a daily cron so it
+regenerates those files in place. As long as `assets/scripts/` keeps its position two levels below
+the site root, the refresh lands directly in the live files. **If you ever move the scripts, fix
+that root derivation to match** — it is the one thing in this repo that hardcodes its own depth
+(the four `.sh` pipelines do the same with `dirname "$0"/../..`).
 
-Use the `scripts/refresh_news.sh` wrapper (stable working dir + timestamped logging + a clear
+Use the `assets/scripts/refresh_news.sh` wrapper (stable working dir + timestamped logging + a clear
 failure exit code). One-time setup, then a crontab line:
 
 ```bash
 pip install Pillow                       # once, on the server (or in a venv)
 # crontab -e — daily at 03:17 server time, appending to a log:
-17 3 * * * /var/www/sao_website/scripts/refresh_news.sh >> /var/log/sao-news.log 2>&1
+17 3 * * * /var/www/sao_website/assets/scripts/refresh_news.sh >> /var/log/sao-news.log 2>&1
 ```
 
 Notes: the scrape needs outbound HTTPS to `cfa.harvard.edu`; the cron user needs write access to
@@ -111,7 +136,7 @@ accessible name are both preserved). The button holds the left image (`.impact-a
 column (`.impact-tag` kicker, `.impact-acc-title`, `.impact-sub`), and a `.impact-acc-chev` chevron.
 The `.impact-acc-body` below it animates open via `grid-template-rows: 0fr→1fr` (inner wrapper clips
 the overflow). Bodies render **open by default** so the section is fully readable with no JS;
-`js/main.js` adds `.js` to `#impact-accordion`, which switches on the collapse, opens the first row,
+`assets/js/main_v4.js` adds `.js` to `#impact-accordion`, which switches on the collapse, opens the first row,
 and marks closed bodies `inert` (out of the tab order). One open at a time — this is generic and
 applies uniformly to all seven `.impact-item`s, "Our Top Discoveries" included. The chevron is
 hidden until JS wires it up.
@@ -180,7 +205,7 @@ curated, non-ranked showcase despite the name. Each row is:
 
 To add, edit, or reorder a discovery: edit these `<li>`s directly (order in the HTML is the display
 order). Deliberately non-interactive — no link, no hover lift — since there's nothing to click
-through to; see the code comment above `.discovery-list` in `css/style.css` if that's ever
+through to; see the code comment above `.discovery-list` in `assets/css/style_v5.css` if that's ever
 reconsidered. Each row's image is flush against the accordion card's own left edge (zero padding on
 `.discovery-list`) and fades right into the navy via the same `mask-image` technique as
 `.impact-acc-art` — the only rounding comes from the outer `.impact-item`'s own `overflow:hidden`,
@@ -191,8 +216,8 @@ To add a new discovery image:
 1. Drop it (any size/format) into `assets/images/discoveries/` and run:
 
    ```bash
-   ./scripts/add_discovery_images.sh          # crop to 800x360, <500KB
-   ./scripts/add_discovery_images.sh --push   # ...and commit + push to deploy
+   ./assets/scripts/add_discovery_images.sh          # crop to 800x360, <500KB
+   ./assets/scripts/add_discovery_images.sh --push   # ...and commit + push to deploy
    ```
 
    The script center-crops to 800×360 (the same shape as `assets/images/impact/*.jpg`) with quality
@@ -205,14 +230,14 @@ To add a new discovery image:
 **1. Drop the master in `assets/logos/originals/` and run the script.**
 
 ```bash
-./scripts/add_logo.sh          # optimize + add the CSS size knob + print snippets
-./scripts/add_logo.sh --push   # ...and commit + push to deploy
+./assets/scripts/add_logo.sh          # optimize + add the CSS size knob + print snippets
+./assets/scripts/add_logo.sh --push   # ...and commit + push to deploy
 ```
 
 For each master it: resizes rasters to at most 320px tall (a logo never needs more, even on retina —
 this took TEMPO's from 3300px/958KB to 91KB) and writes `assets/logos/<name>.png`; copies SVGs
 through untouched, since resampling a vector is meaningless; adds
-`.impact-logo-<name> { --logo-h: 32px; }` to `css/style.css` **without ever clobbering a height
+`.impact-logo-<name> { --logo-h: 32px; }` to `assets/css/style_v5.css` **without ever clobbering a height
 you've already tuned**; and prints paste-ready HTML for both placements with the `width`/`height`
 attributes computed from the real file. It also reports what fraction of each raster is actual ink
 vs transparent padding — see "Resizing a logo" below for why that number matters.
@@ -297,7 +322,7 @@ The knob is the `--logo-h` custom property. Both `.impact-logo` (`height: var(--
 `.card-logo` (`height: var(--logo-h, 46px)`) read it, and width follows automatically from the
 aspect ratio. Set it two ways:
 
-- **Per logo, for every instance** — in `css/style.css`: `.impact-logo-eht { --logo-h: 38px; }`
+- **Per logo, for every instance** — in `assets/css/style_v5.css`: `.impact-logo-eht { --logo-h: 38px; }`
 - **Per instance, straight from `index.html`** — inline, which wins over the class:
 
   ```html
@@ -328,7 +353,7 @@ tool-only flagship link with no dedicated mission card) only needs the one snipp
 
 The landing hero shows a **static** backdrop that the visitor switches with the ‹ › arrow controls
 (bottom-right) — no auto-advance, no Ken Burns. The images, order, and per-image credit lines live
-in the `HERO_MANIFEST` array in [`js/main.js`](js/main.js) (search "Hero backdrop") —
+in the `HERO_MANIFEST` array in [`assets/js/main_v4.js`](assets/js/main_v4.js) (search "Hero backdrop") —
 `{ file, credit, tone? }` per image. The page builds the `.hero-slide` layers from it, crossfades
 between them on arrow press, and shows the active image's `credit` verbatim in the small
 `.hero-credit` caption (bottom-left).
@@ -340,8 +365,8 @@ master image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
 `assets/images/hero_images/originals/` and run:
 
 ```bash
-./scripts/add_hero_images.sh          # optimize + refresh the manifest
-./scripts/add_hero_images.sh --push   # ...and commit + push to deploy
+./assets/scripts/add_hero_images.sh          # optimize + refresh the manifest
+./assets/scripts/add_hero_images.sh --push   # ...and commit + push to deploy
 ```
 
 For each master the script writes a web `<name>.jpg` to `assets/images/hero_images/` — resized to
@@ -362,7 +387,7 @@ to write at all** (exit 1, naming the entry) if it can't identify one. If you ev
 entry's `file:` to a plain `file: "name.jpg"` and re-run — don't work around it.
 
 **`milkyway_backdrop.jpg` is pinned to the top of the manifest** on every run, so it's always the
-first frame a visitor sees. Change `PIN_FIRST` in `scripts/add_hero_images.sh` to pin a different
+first frame a visitor sees. Change `PIN_FIRST` in `assets/scripts/add_hero_images.sh` to pin a different
 one (or set it to `None` for no pinning). Everything else keeps the order you put it in.
 
 - **Reorder** by editing the order of `HERO_MANIFEST` entries (new images are appended at the end,
@@ -393,7 +418,7 @@ the subject off the left edge.
 
 **To override the anchor for one image**, give its `HERO_MANIFEST` entry an optional `focus` — any
 CSS [`background-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-position)
-value. `js/main.js` applies it inline to that slide only; every other image keeps the `left bottom`
+value. `assets/js/main_v4.js` applies it inline to that slide only; every other image keeps the `left bottom`
 default. This is how a mid-frame subject stays in shot:
 
 ```js
@@ -462,7 +487,7 @@ For a **bright frame** (a snowy scene, a white sky) white text washes out, so ta
 `tone: "light"` in `HERO_MANIFEST`. The scrim follows the tone — a navy halo behind navy ink would
 push the backdrop *toward* the text and make it worse, so `--hero-scrim-rgb` flips to paper and the
 halo brightens instead of darkens. The rule is that the scrim always pushes the backdrop *away* from
-the ink. On that slide `applyTone()` in `js/main.js` sets
+the ink. On that slide `applyTone()` in `assets/js/main_v4.js` sets
 `.hero[data-tone="light"]` (and `[data-hero-tone]` on the header) and swaps the hero lockup to the
 colour logo (`si_AO_rgb_verical_color.svg`); the CSS block under `/* Light-tone hero */` flips the
 logo halo, title, tagline, credit, arrows, ghost button, and the transparent nav to dark navy ink.
@@ -489,7 +514,7 @@ Two traps when judging a new frame:
 
 ## Adding to the rotating stats
 
-Edit the `ROTATING_STATS` array near the top of [`js/main.js`](js/main.js):
+Edit the `ROTATING_STATS` array near the top of [`assets/js/main_v4.js`](assets/js/main_v4.js):
 
 ```js
 { big: "1890", label: "Exploring the cosmos<br>since our founding" },
@@ -503,7 +528,7 @@ Edit the `ROTATING_STATS` array near the top of [`js/main.js`](js/main.js):
   page (every section waits on JS-driven reveal animations). Check before pushing:
 
   ```bash
-  node --check js/main.js
+  node --check assets/js/main_v4.js
   ```
 
 ## Accessibility checks
@@ -527,6 +552,18 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
 - **Keyboard** — Tab from the top: the "Skip to main content" link appears first; all links show
   a visible cyan focus outline; on mobile widths the closed menu must NOT be tabbable, Escape
   closes the open menu and returns focus to the toggle.
+- **Invisible-but-focusable elements** — the header logo fades in only once the hero lockup
+  scrolls away. `opacity: 0` and `pointer-events: none` do **not** remove a link from the tab
+  order (`pointer-events` blocks the mouse only), so `.brand` also carries `visibility: hidden`,
+  paired with `visibility: visible` under `.site-header.brand-visible`. Without it, Tab lands on
+  an invisible 214px link immediately after the skip link. Same rule for anything else revealed
+  on scroll.
+- **Focus rings vs. `overflow: hidden`** — the global `:focus-visible` draws its outline 3px
+  *outward*, which a clipping ancestor will silently paint away. `.impact-item` is
+  `overflow: hidden` and its `.impact-acc-header` fills it to the padding-box edge, so that
+  header overrides the offset to `-3px` (inward). Keep it negative; axe cannot detect a clipped
+  outline, so this fails silently in automated scans. Check any new control placed flush inside
+  a clipped container the same way.
 - **Motion** — with `prefers-reduced-motion` enabled, reveals/mosaic/stat rotation all go static;
   the hero backdrop is already static (visitor-switched, no crossfade transition under reduced
   motion). Nothing on the page auto-advances anymore (the news feed's arrows are manual-only), so
@@ -534,6 +571,18 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
   (WCAG 2.2.2).
 - **Structure** — one `<h1>`, logical heading order, `<main>` landmark present, nav landmarks
   labeled, decorative glyphs (↗ arrows) wrapped in `aria-hidden` spans.
+- **External links** — every `target="_blank"` link carries
+  `<span class="visually-hidden">(opens in a new tab)</span>` immediately before its `</a>`, so
+  the jump to a new tab is announced (WCAG 3.2.5 / technique G201). The visible ↗ stays
+  `aria-hidden`. Do **not** wrap the label in `<strong>` to do this — on the CfA buttons that
+  picks up `.cfa strong { color: var(--si-yellow) }` and repaints the label gold. Add a span,
+  nothing else. The one deliberate exception is the footer logo link, which duplicates the
+  "Smithsonian Science" text link beside it and is hidden with `tabindex="-1" aria-hidden="true"`
+  plus `alt=""` (both halves are required — `aria-hidden` alone on a focusable element is itself
+  a violation).
+- **`.visually-hidden`** — keep the `margin: -1px; padding: 0; border: 0` in that rule. Without
+  them the 1px box can still contribute width and a flex gap next to the visible label, and it is
+  now used on ~44 links.
 
 ## Social sharing
 

@@ -435,12 +435,16 @@
           const dateText = isNaN(date) ? item.date
             : date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
+          // These cards are external links too, so they carry the same
+          // "(opens in a new tab)" announcement as every target="_blank" link in
+          // index.html — it just has to be built here rather than authored there.
           card.innerHTML = `
             ${item.image ? `<div class="news-card-photo"><img src="${item.image}" alt="" loading="lazy"></div>` : ""}
             <div class="news-card-body">
               <div class="news-card-meta"><span>${item.label}</span><time datetime="${item.date}">${dateText}</time></div>
               <h3></h3>
-            </div>`;
+            </div>
+            <span class="visually-hidden">(opens in a new tab)</span>`;
           card.querySelector("h3").textContent = item.title;
           newsGrid.append(card);
         }

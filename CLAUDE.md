@@ -9,7 +9,7 @@ exist and is NOT this site).
 
 - **Keep `README.md` up to date.** Any change to structure, workflows, URLs, scripts, or
   the stats/mosaic systems must be reflected there in the same commit.
-- **Syntax-check JS before pushing**: `node --check js/main.js`. All of main.js is one IIFE;
+- **Syntax-check JS before pushing**: `node --check assets/js/main_v4.js`. It is all one IIFE;
   one syntax error blanks the entire site (scroll reveals never fire and content stays at
   opacity 0). This has happened once already (missing comma in ROTATING_STATS).
 - **Optimize every image before it ships.** Nothing over ~500KB in the repo. Use `sips`:
@@ -23,8 +23,23 @@ exist and is NOT this site).
 
 ## Architecture notes
 
-- No build step. index.html + css/style.css + js/main.js. The user's editor reformats HTML
-  (wraps long attribute lines) — match that style; re-grep before Edit if a match fails.
+- No build step. index.html + assets/css/style_v5.css + assets/js/main_v4.js. The user's editor
+  reformats HTML (wraps long attribute lines) — match that style; re-grep before Edit if a match
+  fails. The `assets/` nesting and the version numbers exist to mirror the sao.si.edu deployment
+  (which serves `assets/css/style_v4.css` + `assets/js/main_v3.js` and cache-busts by hand): a new
+  filename IS the cache-bust, so bump the number rather than editing in place when shipping a
+  breaking change there. Keep every reference RELATIVE — this site lives at a sub-path
+  (`/sao_website/`), so a leading-slash `/assets/...` resolves to the domain root and 404s here,
+  while relative paths work at both a sub-path and a domain root. Don't "tidy" them to absolute.
+  **CSS `url()` resolves against the STYLESHEET's location, not the page's.** The two backdrops
+  (`.stats` → bullet_cluster_backdrop.jpg, `.cfa` → simulation_backdrop.jpg) are therefore
+  `url("../images/…")` — correct from `assets/css/`. Moving the stylesheet silently breaks these:
+  the css/ → assets/css/ move turned `../assets/images/` into `assets/assets/images/`, and both
+  sections rendered as flat navy. Nothing catches it — the CSS still parses, axe still passes, the
+  console stays quiet, and a screenshot in the throttled preview looks blank either way. If you
+  ever move the stylesheet, re-point every `url()` and then sweep the page for 404s (fetch every
+  `img[src]`, `link`, `script[src]`, inline `background-image`, and stylesheet `url()`), rather
+  than trusting that the CSS loaded.
 - Brand: Geologica (Google Fonts, matches science.si.edu), Smithsonian blue `#002554`,
   sunburst yellow `#ffcd00`, cyan `#38bdf8`→indigo `#6366f1` gradient for accents
   (CfA red/violet vars exist but are unused — user reverted them as too dark on navy).
@@ -33,7 +48,7 @@ exist and is NOT this site).
   logos are fully outlined. "Reversed" = white text for dark backgrounds. The white STARS
   logo is a generated recolor of the black one.
 - Partner/mission logos (TEMPO, STARS, AstroAI, NASA SciX, GMT, EHT, SMA, FLWO, VERITAS, CXC):
-  drop the master in assets/logos/originals/ (gitignored) and run `scripts/add_logo.sh` — it
+  drop the master in assets/logos/originals/ (gitignored) and run `assets/scripts/add_logo.sh` — it
   resizes rasters to <=320px tall, copies SVGs through, appends a `.impact-logo-<name>` --logo-h
   knob without clobbering tuned values, and prints paste-ready markup. Placement + alt text are
   still a human call — see README "Adding a partner/mission logo". Two hard placement rules:
@@ -60,7 +75,7 @@ exist and is NOT this site).
   tune by eye, or crop the file's dead margin. Raster logos land oversized from
   media kits (TEMPO's was 3300px/958KB) — always `sips --resampleHeight 320` before shipping;
   keep the master in `assets/logos/originals/` (gitignored).
-- Hero backdrops: `HERO_MANIFEST` in js/main.js, refreshed by `scripts/add_hero_images.sh` from
+- Hero backdrops: `HERO_MANIFEST` in assets/js/main_v4.js, refreshed by `assets/scripts/add_hero_images.sh` from
   masters in assets/images/hero_images/originals/ (gitignored). INVARIANT: the script copies
   existing entries VERBATIM — it reads only each `file:` key to identify the entry and never
   rewrites the rest, so credit/tone/focus/field-order/anything-added-later survive byte-for-byte.
@@ -71,19 +86,19 @@ exist and is NOT this site).
   milkyway_backdrop.jpg) is hoisted to index 0 on every run; everything else keeps the author's
   order, new images append. A RENAMED master is indistinguishable from retire+add, so the script
   echoes the credit of anything it retires — that print is the only copy left.
-- Mosaic: `scripts/add_mosaic_images.sh` is the only sanctioned way to add tiles — it
-  numbers tiles, regenerates `MOSAIC_MANIFEST` in js/main.js, and syntax-checks. In dev the
+- Mosaic: `assets/scripts/add_mosaic_images.sh` is the only sanctioned way to add tiles — it
+  numbers tiles, regenerates `MOSAIC_MANIFEST` in assets/js/main_v4.js, and syntax-checks. In dev the
   mosaic auto-discovers via directory listing; on Pages it uses the manifest. The rotation
   uses a reservation set so the same image never appears in two tiles at once, including
   while loading or mid-crossfade (reserved from assignment until fade-out completes) —
   preserve this invariant when touching the rotation code.
-- Rotating stats: `ROTATING_STATS` in js/main.js. Numeric `big` values (optional trailing
+- Rotating stats: `ROTATING_STATS` in assets/js/main_v4.js. Numeric `big` values (optional trailing
   `+`) count up; words render as text, `.long` class auto-applies over 6 chars.
 - News feed (Impact section): assets/data/news.json + assets/images/news/ are generated by
-  scripts/update_news.py (scrapes cfa.harvard.edu/news; regex tied to their Drupal markup —
+  assets/scripts/update_news.py (scrapes cfa.harvard.edu/news; regex tied to their Drupal markup —
   a.copy-box / news-photo-frame / h4). A daily GitHub Action commits refreshes. Never
   hand-edit news.json. On a self-hosted deploy (not Pages), the same script runs from cron via
-  scripts/refresh_news.sh, writing straight into the served assets/ — no site change needed
+  assets/scripts/refresh_news.sh, writing straight into the served assets/ — no site change needed
   (see README "Keeping the feed fresh on a self-hosted server"). The script exits nonzero WITHOUT
   writing when it parses <3 items, so a failed scrape never blanks the feed — preserve that guard.
 - Impact accordion (#impact-accordion): a vertical stack of `.impact-item` themed disclosures
@@ -140,19 +155,40 @@ exist and is NOT this site).
   `backdrop-filter`/`filter`/`transform` on `.site-header` itself (it becomes the containing
   block and pins the overlay inside the 60px bar — the frosted background lives on
   `.site-header::before` for exactly this reason).
-- Header layout: SAO logo LEFT, nav RIGHT (plain DOM order — an `order: 1` on `.brand` once
-  flipped this and was reverted on request; don't reintroduce it). The logo still only fades in
-  on scroll, via `.brand-visible` (an IntersectionObserver on `.hero-logo`, so the header lockup
-  never doubles the hero one). Two non-obvious constraints: (1) the full nav row (~860px, since the
-  external "Careers" link was added alongside Support) plus the horizontal lockup (~215px) plus
-  padding don't fit until ~1150px, and the hamburger only takes over at <=880px (the nav row alone
-  needs ~860px to sit uncramped), so `.brand` is `display:none` in the 881-1150px band — the nav must win,
-  since otherwise the Support CTA sits off-screen. This bites at page top too: `.brand` holds its
-  full width at `opacity: 0`. (The old nav-left layout merely hid this — the invisible logo was
-  the thing overflowing, so nobody saw it.) Hide `.brand`, not `.brand-logo`, or you leave a
-  focusable link with no accessible name. (2) `.site-nav` holds the right with its own
-  `margin-left: auto`, NOT the header's space-between — with `.brand` hidden it'd be a lone
-  space-between item, which sits at the START and would swing the nav left.
+- Header layout: nav LEFT, SAO logo RIGHT — matching the si.edu fork, adopted on request.
+  **This is done by DOM order (`<nav>` then `.brand`), never by `order: 1`.** The fork gets the
+  same look by leaving `.brand` first and setting `order: 1` on it, which paints the logo right
+  while it stays first in the tab order — measured on their build, focus lands at x=959 and then
+  jumps back to x=48 (WCAG 2.4.3 focus order / 1.3.2 meaningful sequence). Ours is verified the
+  other way: no positive `tabindex` anywhere, so DOM order *is* tab order, and the header's
+  focusables run x = 48 → 124 → 213 → 315 → 440 → 690 → 800 → 1138, strictly left to right.
+  If you ever need to move the logo again, move the element, not the paint order.
+  The logo still only fades in on scroll, via `.brand-visible` (an IntersectionObserver on
+  `.hero-logo`, so the header lockup never doubles the hero one). Two non-obvious constraints:
+  (1) the full nav row (~900px, since the external "Careers" link was added alongside the
+  "Support SAO" CTA) plus the horizontal lockup (~215px, ~176px once `.scrolled` shrinks it —
+  and the logo only ever shows while scrolled) plus padding don't fit until ~1200px, and the
+  hamburger only takes over at <=880px (the nav row alone needs ~825px to sit uncramped), so
+  `.brand` is `display:none` in the 881-1200px band — the nav wins.
+  **Re-measure this band whenever a nav label changes**: renaming "Support" → "Support SAO"
+  widened the row ~43px and cut the logo/nav clearance at the old 1150 bound to 16px, which is
+  why the bound moved to 1200 (verified: 55.1px clearance at 1201px). At the very bottom of the
+  band (881-920px) the row sits ~15px into the header padding; still fits, CTA on-screen, no
+  document overflow, but there's little left to give — raise the 880px hamburger bound before
+  adding another link. Note the overflow failure mode FLIPPED with this layout: the logo is now
+  the trailing item, so without the band it is the LOGO that runs off the right edge, and an
+  invisible logo clipping off-screen is something nobody notices — check the logo's right edge
+  against the viewport when re-measuring, not just the Support CTA. This bites at page top too:
+  `visibility: hidden` still reserves the layout box, so `.brand` holds its full width while
+  invisible (see the accessibility note below — `opacity: 0` alone left it in the tab order).
+  Hide `.brand`, not `.brand-logo`, or you leave a focusable link with no accessible name.
+  (2) There is deliberately NO auto margin on `.site-nav` or `.brand` — the header's plain
+  `space-between` covers all three regimes: >1200px `[nav, brand]` → nav left/logo right;
+  881-1200px `.brand` is `display:none` so nav is the lone item and a lone space-between item
+  sits at the START, i.e. left, which is now the goal (this used to be the bug `margin-left:auto`
+  worked around under the old nav-right layout); <=880px `.site-nav` is `position:fixed inset:0`
+  so the in-flow items are `[brand, toggle]` → logo left, hamburger right. An auto margin on
+  `.brand` would break that last case by shoving the logo against the hamburger.
 
 ## Accessibility baseline (do not regress)
 

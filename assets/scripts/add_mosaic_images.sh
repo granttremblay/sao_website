@@ -9,17 +9,17 @@
 #
 # Each image is center-cropped to a 600x600 JPEG (~50-100KB), named
 # mosaic_NN.jpg continuing from the highest existing number, and the
-# MOSAIC_MANIFEST list in js/main.js is regenerated to match the mosaic
+# MOSAIC_MANIFEST list in assets/js/main_v4.js is regenerated to match the mosaic
 # folder. Processed sources are moved to mosaic_sources/processed/ so
 # re-running only picks up new files.
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 SOURCES="$REPO/assets/images/mosaic_sources"
 MOSAIC="$REPO/assets/images/mosaic"
 DONE="$SOURCES/processed"
-MAINJS="$REPO/js/main.js"
+MAINJS="$REPO/assets/js/main_v4.js"
 
 mkdir -p "$SOURCES" "$MOSAIC" "$DONE"
 
@@ -95,7 +95,7 @@ if [ "$count" -eq 0 ]; then
   exit 0
 fi
 
-# Regenerate MOSAIC_MANIFEST in js/main.js from the mosaic folder contents
+# Regenerate MOSAIC_MANIFEST in assets/js/main_v4.js from the mosaic folder contents
 python3 - "$MAINJS" "$MOSAIC" <<'EOF'
 import re, sys, pathlib
 mainjs, mosaic = sys.argv[1], pathlib.Path(sys.argv[2])
@@ -106,18 +106,18 @@ new, n = re.subn(
     r"const MOSAIC_MANIFEST = \[.*?\];",
     f"const MOSAIC_MANIFEST = [\n{entries}\n  ];",
     src, flags=re.S)
-assert n == 1, "MOSAIC_MANIFEST array not found in js/main.js"
+assert n == 1, "MOSAIC_MANIFEST array not found in assets/js/main_v4.js"
 open(mainjs, "w").write(new)
 print(f"Updated MOSAIC_MANIFEST: {len(files)} tiles")
 EOF
 
-node --check "$MAINJS" && echo "js/main.js syntax OK"
+node --check "$MAINJS" && echo "assets/js/main_v4.js syntax OK"
 
 echo "Done: $count new tile(s)."
 
 if [ "${1:-}" = "--push" ]; then
   cd "$REPO"
-  git add assets/images/mosaic js/main.js
+  git add assets/images/mosaic assets/js/main_v4.js
   git commit -m "Add $count new mosaic tile(s)"
   git push
   echo "Pushed — live in ~1 minute."

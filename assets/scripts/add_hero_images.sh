@@ -10,23 +10,23 @@
 # For each master in originals/ the script writes a web JPG to
 #   assets/images/hero_images/<name>.jpg
 # resized to at most MAX_WIDTH (never upscaled) at high quality, then
-# regenerates the HERO_MANIFEST list in js/main.js, which the page reads to
+# regenerates the HERO_MANIFEST list in assets/js/main_v4.js, which the page reads to
 # build the arrow-switchable hero backdrops.
 #
 # These backdrops are the site's showpiece, so quality is prioritized over
 # file size: MAX_WIDTH is large and there is no ~500KB cap here (unlike other
 # images). Existing per-image credit lines (and the optional tone: "light" flag
 # for bright/snowy frames, and the optional focus: crop anchor) are preserved;
-# brand-new images get a placeholder credit for you to edit in js/main.js.
+# brand-new images get a placeholder credit for you to edit in assets/js/main_v4.js.
 #
 # The originals/ masters are gitignored — only the optimized <name>.jpg ships.
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 HERO="$REPO/assets/images/hero_images"
 ORIG="$HERO/originals"
-MAINJS="$REPO/js/main.js"
+MAINJS="$REPO/assets/js/main_v4.js"
 
 MAX_WIDTH=3200   # crisp on large / retina displays
 QUALITY=88       # visually lossless for photographic starfields
@@ -75,7 +75,7 @@ present = sorted(p.name for p in hero.glob("*.jpg") if p.stem in master_stems)
 
 src = open(mainjs).read()
 m = re.search(r"const HERO_MANIFEST = \[(.*?)\];", src, flags=re.S)
-assert m, "HERO_MANIFEST array not found in js/main.js"
+assert m, "HERO_MANIFEST array not found in assets/js/main_v4.js"
 
 # Keep every existing entry's EXACT source text. We deliberately do NOT rebuild
 # entries out of parsed fields: that older approach re-emitted each { file,
@@ -128,7 +128,7 @@ print(f"Updated HERO_MANIFEST: {len(ordered)} image(s)")
 if PIN_FIRST in ordered:
     print(f"  Pinned first: {PIN_FIRST}")
 if new:
-    print("  New (edit their placeholder credit in js/main.js): " + ", ".join(new))
+    print("  New (edit their placeholder credit in assets/js/main_v4.js): " + ", ".join(new))
 # A master that is renamed rather than deleted looks exactly like "old one
 # retired + new one added", so echo the credit we're dropping — otherwise the
 # prose is gone and the terminal is the only place it still exists.
@@ -142,11 +142,11 @@ if retired:
     print("      If you meant to RENAME one, paste that credit onto the new entry.")
 EOF
 
-node --check "$MAINJS" && echo "js/main.js syntax OK"
+node --check "$MAINJS" && echo "assets/js/main_v4.js syntax OK"
 
 if [ "${1:-}" = "--push" ]; then
   cd "$REPO"
-  git add assets/images/hero_images js/main.js
+  git add assets/images/hero_images assets/js/main_v4.js
   git commit -m "Update hero backdrop images"
   git push
   echo "Pushed — live in ~1 minute."
