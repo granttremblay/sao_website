@@ -3,7 +3,7 @@
 
 Scrapes the Recent News Releases list on https://www.cfa.harvard.edu/news,
 downloads and web-optimizes each item's image, and writes
-assets/data/news.json for js/main.js to render. Run manually or via the
+assets/data/news.json for assets/js/main_v4.js to render. Run manually or via the
 scheduled GitHub Action (.github/workflows/update-news.yml).
 
 Requires: Pillow  (pip install Pillow)

@@ -11,7 +11,7 @@
 #   1. writes a shipping file to assets/logos/<name>.<ext> — rasters resampled
 #      to at most MAX_HEIGHT tall (never upscaled); SVGs copied through as-is,
 #      since they're vector and resampling them is meaningless.
-#   2. ensures `.impact-logo-<name> { --logo-h: Npx; }` exists in css/style.css,
+#   2. ensures `.impact-logo-<name> { --logo-h: Npx; }` exists in assets/css/style_v5.css,
 #      NEVER clobbering a height you've already tuned by hand.
 #   3. prints paste-ready HTML for both placements, with the width/height
 #      attributes computed from the real file so the aspect ratio is correct.
@@ -27,7 +27,7 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 LOGOS="$REPO/assets/logos"
 ORIG="$LOGOS/originals"
-CSS="$REPO/css/style.css"
+CSS="$REPO/assets/css/style_v5.css"
 
 MAX_HEIGHT=320       # plenty for a ~26-60px render on a 2x display
 DEFAULT_LOGO_H=32    # starting knob value for a brand-new logo; tune by eye
@@ -82,7 +82,7 @@ src = open(css_path).read()
 
 anchor = re.search(r'(\.impact-logo-[a-z0-9-]+ \{ --logo-h: \d+px; \}\n)+', src)
 if not anchor:
-    sys.exit("Could not find the .impact-logo-* knob block in css/style.css")
+    sys.exit("Could not find the .impact-logo-* knob block in assets/css/style_v5.css")
 
 added, kept = [], []
 block = anchor.group(0)
@@ -99,7 +99,7 @@ if added:
     src = src[:anchor.start()] + block + src[anchor.end():]
     open(css_path, "w").write(src)
 
-print("\nCSS size knobs (css/style.css):")
+print("\nCSS size knobs (assets/css/style_v5.css):")
 for a in added:
     print(f"  + .impact-logo-{a} {{ --logo-h: {default_h}px; }}   <- NEW, tune this by eye")
 for k in kept:
@@ -175,7 +175,7 @@ echo "instance inline in index.html with style=\"--logo-h: 52px\"."
 
 if [ "${1:-}" = "--push" ]; then
   cd "$REPO"
-  git add assets/logos css/style.css index.html
+  git add assets/logos assets/css/style_v5.css index.html
   git commit -m "Add partner/mission logo(s)"
   git push
   echo "Pushed — live in ~1 minute."
