@@ -23,7 +23,7 @@ exist and is NOT this site).
 
 ## Architecture notes
 
-- No build step. index.html + assets/css/style_v5.css + assets/js/main_v4.js. The user's editor
+- No build step. index.html + assets/css/style_v6.css + assets/js/main_v4.js. The user's editor
   reformats HTML (wraps long attribute lines) — match that style; re-grep before Edit if a match
   fails. The `assets/` nesting and the version numbers exist to mirror the sao.si.edu deployment
   (which serves `assets/css/style_v4.css` + `assets/js/main_v3.js` and cache-busts by hand): a new
@@ -40,7 +40,13 @@ exist and is NOT this site).
   ever move the stylesheet, re-point every `url()` and then sweep the page for 404s (fetch every
   `img[src]`, `link`, `script[src]`, inline `background-image`, and stylesheet `url()`), rather
   than trusting that the CSS loaded.
-- Brand: Geologica (Google Fonts, matches science.si.edu), Smithsonian blue `#002554`,
+- Brand: Geologica (matches science.si.edu) — **self-hosted since 2026-07-29**, two variable
+  woff2 subsets in `assets/fonts/` with `@font-face` at the top of the stylesheet. Do NOT
+  restore the `fonts.googleapis.com` `<link>`: it was the page's only third-party request, and
+  font-blocking extensions/proxies silently dropped the whole site to the Helvetica fallback.
+  Only latin + latin-ext ship; out-of-range glyphs fall back per-glyph (↗ U+2197 always has,
+  Google ships it in no Geologica subset). The long comment above the `@font-face` blocks has
+  the details and the recipe for adding a subset. Smithsonian blue `#002554`,
   sunburst yellow `#ffcd00`, cyan `#38bdf8`→indigo `#6366f1` gradient for accents
   (CfA red/violet vars exist but are unused — user reverted them as too dark on navy).
 - Logos in assets/logos. **Every SVG here must be fully outlined — no `<text>`, no

@@ -11,7 +11,10 @@ Deployed via GitHub Pages from the `main` branch root — every push to `main` g
 ```
 index.html                  Single-page site (hero, stats, impact, missions, history, CfA, footer)
 assets/
-  css/style_v5.css          All styles; brand colors as CSS variables in :root
+  css/style_v6.css          All styles; brand colors as CSS variables in :root;
+                            @font-face for the self-hosted Geologica at the top
+  fonts/                    Geologica variable woff2 (latin, latin-ext) — self-hosted,
+                            no third-party font request (see below)
   js/main_v4.js             Interactions: nav, scroll reveals, hero backdrops,
                             rotating stat, photo mosaic, news feed,
                             impact accordion (incl. Our Top Discoveries), timeline
@@ -43,17 +46,64 @@ Heavy source images (original PNGs/screenshots) stay local and are gitignored; t
 
 ### Why the CSS and JS carry version numbers
 
-`assets/css/style_v5.css` and `assets/js/main_v4.js` sit under `assets/` with versioned filenames
+`assets/css/style_v6.css` and `assets/js/main_v4.js` sit under `assets/` with versioned filenames
 to match the Smithsonian (sao.si.edu) deployment of this site, which serves `assets/css/style_v4.css`
 and `assets/js/main_v3.js` and cache-busts by hand. Renaming the file *is* the cache-bust: a new
 filename is a new URL, so returning visitors can never get old CSS against new HTML. **If you make
 a breaking change to either file for that deployment, ship it under the next version number** rather
 than editing in place — otherwise their cached copies and your markup drift apart.
 
-All references are **relative** (`assets/css/style_v5.css`, not `/assets/...`). That matters: this
+All references are **relative** (`assets/css/style_v6.css`, not `/assets/...`). That matters: this
 site lives at a sub-path (`granttremblay.github.io/sao_website/`), where a leading slash would
 resolve to the domain root and 404. Relative paths resolve correctly both here and at a domain-root
 deployment, so the same file works for both. Don't "tidy" them into absolute paths.
+
+The v5 → v6 bump was exactly the case that rule exists for: the HTML dropped the Google Fonts
+`<link>` in the same commit that the CSS gained `@font-face`. A returning visitor with new HTML and
+a cached v5 stylesheet would have had *neither* source of the font, and the site would have silently
+rendered in Helvetica. A new filename makes that pairing impossible.
+
+## Geologica is self-hosted
+
+The font ships from `assets/fonts/` — **there is no request to fonts.googleapis.com**, and the
+`<link>` must not come back. It was the only third-party subresource on the page, and it is blocked
+by uBlock Origin's "Block remote fonts" toggle, Brave's aggressive shields, AdGuard's privacy filter
+lists, and many corporate proxies. When blocked, every one of those visitors got the
+`"Helvetica Neue", sans-serif` fallback with no visible error — the site looked subtly wrong and
+nothing in the console said why. Self-hosting also drops a DNS lookup, a TLS handshake, and two
+round trips (the CSS has to arrive before the font URL is even known) off first paint.
+
+Two files, both **variable** fonts covering the whole 200–800 weight axis, so a newly used weight
+needs no new file (the site uses 400/500/600/700 today):
+
+| file | subset | size |
+|---|---|---|
+| `geologica-latin.woff2` | `latin` | 25 KB |
+| `geologica-latin-ext.woff2` | `latin-ext` | 22 KB |
+
+Every character on the site today is in `latin`. `latin-ext` is insurance for the auto-updating CfA
+news feed, whose headlines we don't control (names like Ondřejov or Płaszczyński). Greek, Cyrillic
+and Vietnamese are deliberately not shipped. That is safe because `unicode-range` degrades **per
+glyph**, not per page: a character outside the shipped ranges renders in a system font while
+everything around it stays Geologica — exactly what `↗` (U+2197) already does, since Google ships
+that glyph in no Geologica subset at all.
+
+`index.html` preloads only the latin file. The `crossorigin` attribute on that preload is required
+even though the file is same-origin — fonts are always fetched in CORS mode, and without it the
+browser downloads the file twice.
+
+To add a subset (or refresh the font):
+
+```bash
+UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+curl -s -A "$UA" "https://fonts.googleapis.com/css2?family=Geologica:wght@200..800&display=swap"
+```
+
+A browser User-Agent is what makes Google return woff2 variable fonts; curl's default UA gets legacy
+TrueType instead. Download the subset's `.woff2`, drop it in `assets/fonts/`, and copy its
+`unicode-range` into the stylesheet **verbatim** — never hand-edit a range, since it must match the
+file's real coverage or glyphs silently disappear. Asking for a narrower weight axis
+(`wght@400..700`) returns a byte-identical file, so there is nothing to gain by clamping it.
 
 ## Header logo → back to top
 
@@ -206,7 +256,7 @@ curated, non-ranked showcase despite the name. Each row is:
 
 To add, edit, or reorder a discovery: edit these `<li>`s directly (order in the HTML is the display
 order). Deliberately non-interactive — no link, no hover lift — since there's nothing to click
-through to; see the code comment above `.discovery-list` in `assets/css/style_v5.css` if that's ever
+through to; see the code comment above `.discovery-list` in `assets/css/style_v6.css` if that's ever
 reconsidered. Each row's image is flush against the accordion card's own left edge (zero padding on
 `.discovery-list`) and fades right into the navy via the same `mask-image` technique as
 `.impact-acc-art` — the only rounding comes from the outer `.impact-item`'s own `overflow:hidden`,
@@ -238,7 +288,7 @@ To add a new discovery image:
 For each master it: resizes rasters to at most 320px tall (a logo never needs more, even on retina —
 this took TEMPO's from 3300px/958KB to 91KB) and writes `assets/logos/<name>.png`; copies SVGs
 through untouched, since resampling a vector is meaningless; adds
-`.impact-logo-<name> { --logo-h: 32px; }` to `assets/css/style_v5.css` **without ever clobbering a height
+`.impact-logo-<name> { --logo-h: 32px; }` to `assets/css/style_v6.css` **without ever clobbering a height
 you've already tuned**; and prints paste-ready HTML for both placements with the `width`/`height`
 attributes computed from the real file. It also reports what fraction of each raster is actual ink
 vs transparent padding — see "Resizing a logo" below for why that number matters.
@@ -334,7 +384,7 @@ The knob is the `--logo-h` custom property. Both `.impact-logo` (`height: var(--
 `.card-logo` (`height: var(--logo-h, 46px)`) read it, and width follows automatically from the
 aspect ratio. Set it two ways:
 
-- **Per logo, for every instance** — in `assets/css/style_v5.css`: `.impact-logo-eht { --logo-h: 38px; }`
+- **Per logo, for every instance** — in `assets/css/style_v6.css`: `.impact-logo-eht { --logo-h: 38px; }`
 - **Per instance, straight from `index.html`** — inline, which wins over the class:
 
   ```html

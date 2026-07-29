@@ -4,6 +4,49 @@
    with sunburst yellow, plus the vibrant accents of science.si.edu
    =================================================================== */
 
+/* Geologica is SELF-HOSTED — do not put the fonts.googleapis.com <link> back.
+   It was the site's only third-party subresource, and uBlock Origin's "Block
+   remote fonts", Brave's aggressive shields, AdGuard's privacy lists, and most
+   corporate proxies all kill it, silently dropping the whole page to the
+   "Helvetica Neue" fallback. Serving it ourselves also removes a DNS lookup +
+   TLS handshake + two round trips from first paint.
+
+   One variable file per subset covers the whole 200-800 weight axis, so there
+   is nothing to add when a new weight gets used (the site uses 400/500/600/700
+   today). Asking Google for a narrower axis returns a byte-identical file, so
+   there is no saving in clamping the range — don't bother.
+
+   Only latin + latin-ext are shipped. Every character on the site today lives
+   in `latin`; latin-ext is insurance for the auto-updating CfA news feed, whose
+   headlines we don't control (astronomer names like Ondřejov, Płaszczyński).
+   Greek, Cyrillic and Vietnamese are deliberately omitted — a character outside
+   the shipped ranges falls back to a system font for that glyph only, exactly
+   as ↗ (U+2197) already does, since Google ships it in no Geologica subset.
+   To add one: fetch the css2 URL with a Chrome UA, grab that subset's woff2 and
+   its unicode-range verbatim, and add a block below. Never edit a unicode-range
+   by hand — it must match the file's actual coverage or glyphs vanish. */
+
+@font-face {
+  font-family: "Geologica";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("../fonts/geologica-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Geologica";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("../fonts/geologica-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
   --si-blue-deepest: #050d24;
   --si-blue-deep: #0a1638;

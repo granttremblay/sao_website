@@ -25,10 +25,15 @@
     content="Discover wonder. For more than 130 years, SAO has explored the universe, from the first measurements of our Sun to humanity's first image of a black hole.">
   <meta name="twitter:image" content="https://granttremblay.github.io/sao_website/assets/images/social_card.jpg">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@200..800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style_v5.css">
+  <!-- Geologica is self-hosted (assets/fonts/, @font-face at the top of the
+       stylesheet). Do not restore the fonts.googleapis.com <link>: it was the
+       only third-party request on the page, and font-blocking extensions and
+       proxies silently dropped the site to its Helvetica fallback. The preload
+       starts the latin file before the CSS is parsed; `crossorigin` is required
+       even same-origin, because fonts are always fetched in CORS mode — without
+       it the browser downloads the file twice. -->
+  <link rel="preload" href="assets/fonts/geologica-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/style_v6.css">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
