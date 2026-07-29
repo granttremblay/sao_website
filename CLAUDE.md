@@ -31,6 +31,15 @@ exist and is NOT this site).
   breaking change there. Keep every reference RELATIVE — this site lives at a sub-path
   (`/sao_website/`), so a leading-slash `/assets/...` resolves to the domain root and 404s here,
   while relative paths work at both a sub-path and a domain root. Don't "tidy" them to absolute.
+  **CSS `url()` resolves against the STYLESHEET's location, not the page's.** The two backdrops
+  (`.stats` → bullet_cluster_backdrop.jpg, `.cfa` → simulation_backdrop.jpg) are therefore
+  `url("../images/…")` — correct from `assets/css/`. Moving the stylesheet silently breaks these:
+  the css/ → assets/css/ move turned `../assets/images/` into `assets/assets/images/`, and both
+  sections rendered as flat navy. Nothing catches it — the CSS still parses, axe still passes, the
+  console stays quiet, and a screenshot in the throttled preview looks blank either way. If you
+  ever move the stylesheet, re-point every `url()` and then sweep the page for 404s (fetch every
+  `img[src]`, `link`, `script[src]`, inline `background-image`, and stylesheet `url()`), rather
+  than trusting that the CSS loaded.
 - Brand: Geologica (Google Fonts, matches science.si.edu), Smithsonian blue `#002554`,
   sunburst yellow `#ffcd00`, cyan `#38bdf8`→indigo `#6366f1` gradient for accents
   (CfA red/violet vars exist but are unused — user reverted them as too dark on navy).

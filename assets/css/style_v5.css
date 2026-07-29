@@ -719,7 +719,7 @@ a {
 .stats {
   background:
     linear-gradient(180deg, rgba(5, 13, 36, .78) 0%, rgba(5, 13, 36, .62) 50%, rgba(5, 13, 36, .82) 100%),
-    url("../assets/images/bullet_cluster_backdrop.jpg") center / cover no-repeat,
+    url("../images/bullet_cluster_backdrop.jpg") center / cover no-repeat,
     var(--si-blue-deepest);
   color: var(--white);
   padding: clamp(3rem, 6vw, 5rem) clamp(1.2rem, 5vw, 4rem);
@@ -1808,7 +1808,7 @@ a {
 .cfa {
   background:
     linear-gradient(180deg, rgba(5, 13, 36, .74) 0%, rgba(5, 13, 36, .6) 50%, rgba(5, 13, 36, .8) 100%),
-    url("../assets/images/simulation_backdrop.jpg") center / cover no-repeat,
+    url("../images/simulation_backdrop.jpg") center / cover no-repeat,
     var(--si-blue-deepest);
   color: var(--white);
   text-align: center;
