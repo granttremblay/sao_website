@@ -140,26 +140,40 @@ exist and is NOT this site).
   `backdrop-filter`/`filter`/`transform` on `.site-header` itself (it becomes the containing
   block and pins the overlay inside the 60px bar — the frosted background lives on
   `.site-header::before` for exactly this reason).
-- Header layout: SAO logo LEFT, nav RIGHT (plain DOM order — an `order: 1` on `.brand` once
-  flipped this and was reverted on request; don't reintroduce it). The logo still only fades in
-  on scroll, via `.brand-visible` (an IntersectionObserver on `.hero-logo`, so the header lockup
-  never doubles the hero one). Two non-obvious constraints: (1) the full nav row (~900px, since the
-  external "Careers" link was added alongside the "Support SAO" CTA) plus the horizontal lockup
-  (~215px, ~176px once `.scrolled` shrinks it) plus padding don't fit until ~1200px, and the
+- Header layout: nav LEFT, SAO logo RIGHT — matching the si.edu fork, adopted on request.
+  **This is done by DOM order (`<nav>` then `.brand`), never by `order: 1`.** The fork gets the
+  same look by leaving `.brand` first and setting `order: 1` on it, which paints the logo right
+  while it stays first in the tab order — measured on their build, focus lands at x=959 and then
+  jumps back to x=48 (WCAG 2.4.3 focus order / 1.3.2 meaningful sequence). Ours is verified the
+  other way: no positive `tabindex` anywhere, so DOM order *is* tab order, and the header's
+  focusables run x = 48 → 124 → 213 → 315 → 440 → 690 → 800 → 1138, strictly left to right.
+  If you ever need to move the logo again, move the element, not the paint order.
+  The logo still only fades in on scroll, via `.brand-visible` (an IntersectionObserver on
+  `.hero-logo`, so the header lockup never doubles the hero one). Two non-obvious constraints:
+  (1) the full nav row (~900px, since the external "Careers" link was added alongside the
+  "Support SAO" CTA) plus the horizontal lockup (~215px, ~176px once `.scrolled` shrinks it —
+  and the logo only ever shows while scrolled) plus padding don't fit until ~1200px, and the
   hamburger only takes over at <=880px (the nav row alone needs ~825px to sit uncramped), so
-  `.brand` is `display:none` in the 881-1200px band — the nav must win,
-  since otherwise the Support CTA sits off-screen. **Re-measure this band whenever a nav label
-  changes**: renaming "Support" → "Support SAO" widened the row ~43px and cut the logo/nav
-  clearance at the old 1150 bound to 16px, which is why the bound moved to 1200. At the very
-  bottom of the band (881-920px) the row now sits ~15px into the header padding; still fits, CTA
-  on-screen, no document overflow, but there's little left to give — raise the 880px hamburger
-  bound before adding another link. This bites at page top too: `.brand` holds its
-  full width at `visibility: hidden` (see the accessibility note below — `opacity: 0` alone left
-  it in the tab order). (The old nav-left layout merely hid this — the invisible logo was
-  the thing overflowing, so nobody saw it.) Hide `.brand`, not `.brand-logo`, or you leave a
-  focusable link with no accessible name. (2) `.site-nav` holds the right with its own
-  `margin-left: auto`, NOT the header's space-between — with `.brand` hidden it'd be a lone
-  space-between item, which sits at the START and would swing the nav left.
+  `.brand` is `display:none` in the 881-1200px band — the nav wins.
+  **Re-measure this band whenever a nav label changes**: renaming "Support" → "Support SAO"
+  widened the row ~43px and cut the logo/nav clearance at the old 1150 bound to 16px, which is
+  why the bound moved to 1200 (verified: 55.1px clearance at 1201px). At the very bottom of the
+  band (881-920px) the row sits ~15px into the header padding; still fits, CTA on-screen, no
+  document overflow, but there's little left to give — raise the 880px hamburger bound before
+  adding another link. Note the overflow failure mode FLIPPED with this layout: the logo is now
+  the trailing item, so without the band it is the LOGO that runs off the right edge, and an
+  invisible logo clipping off-screen is something nobody notices — check the logo's right edge
+  against the viewport when re-measuring, not just the Support CTA. This bites at page top too:
+  `visibility: hidden` still reserves the layout box, so `.brand` holds its full width while
+  invisible (see the accessibility note below — `opacity: 0` alone left it in the tab order).
+  Hide `.brand`, not `.brand-logo`, or you leave a focusable link with no accessible name.
+  (2) There is deliberately NO auto margin on `.site-nav` or `.brand` — the header's plain
+  `space-between` covers all three regimes: >1200px `[nav, brand]` → nav left/logo right;
+  881-1200px `.brand` is `display:none` so nav is the lone item and a lone space-between item
+  sits at the START, i.e. left, which is now the goal (this used to be the bug `margin-left:auto`
+  worked around under the old nav-right layout); <=880px `.site-nav` is `position:fixed inset:0`
+  so the in-flow items are `[brand, toggle]` → logo left, hamburger right. An auto margin on
+  `.brand` would break that last case by shoving the logo against the hamburger.
 
 ## Accessibility baseline (do not regress)
 

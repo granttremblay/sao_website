@@ -39,11 +39,13 @@
   <a class="skip-link" href="#main">Skip to main content</a>
 
   <!-- ======= Header ======= -->
+  <!-- Nav LEFT, logo RIGHT — and that is the DOM order, deliberately. The si.edu
+       fork gets this layout by leaving .brand first and applying `order: 1` to it,
+       which paints the logo on the right while it stays first in the tab order:
+       keyboard focus jumps to the far-right element, then back to the far left
+       (WCAG 2.4.3 / 1.3.2). Reordering the source instead keeps visual order and
+       focus order identical. Do not reintroduce `order` here. -->
   <header class="site-header">
-    <a class="brand" href="#top">
-      <img class="brand-logo" src="assets/logos/si_AO_rgb_horizontal_color-reversed.svg"
-        alt="Smithsonian Astrophysical Observatory">
-    </a>
     <nav class="site-nav" id="primary-nav" aria-label="Primary">
       <a href="#news">News</a>
       <a href="#impact">Impact</a>
@@ -55,6 +57,10 @@
       <a class="nav-cta" href="https://www.cfa.harvard.edu/?form=FUNGQVTAAKL" target="_blank"
         rel="noopener">Support SAO<span aria-hidden="true">↗</span><span class="visually-hidden">(opens in a new tab)</span></a>
     </nav>
+    <a class="brand" href="#top">
+      <img class="brand-logo" src="assets/logos/si_AO_rgb_horizontal_color-reversed.svg"
+        alt="Smithsonian Astrophysical Observatory">
+    </a>
     <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
       <span></span><span></span><span></span>
     </button>

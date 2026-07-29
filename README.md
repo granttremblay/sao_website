@@ -43,6 +43,13 @@ Heavy source images (original PNGs/screenshots) stay local and are gitignored; t
 
 The scroll-in SAO lockup (`a.brand`) links to `href="#top"`, which scrolls the page back to the top. **Do not** put `id="top"` on `.site-header` (or any element) — the header is `position: fixed`, so an `#top` that resolves to it is always "in view" and the click does nothing. With no element owning that id, the browser falls back to the spec behavior of scrolling to the top of the document (smoothly, via `html { scroll-behavior: smooth }`). No JS involved.
 
+The header runs **nav left, logo right**, and that is the source order (`<nav>` then `a.brand`)
+— not a CSS `order` flip. Reordering visually while leaving the DOM alone makes keyboard focus
+jump to the far-right element and back again (WCAG 2.4.3 / 1.3.2); there is no positive
+`tabindex` anywhere on the page, so DOM order is the tab order and the two stay in step. If the
+logo needs to move again, move the element. See CLAUDE.md for the breakpoint arithmetic that
+hangs off this.
+
 ## Adding images to the mosaic rotation
 
 1. Drop images — any size, any filename (jpg/png/heic/webp/tiff) — into `assets/images/mosaic_sources/`

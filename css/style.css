@@ -116,12 +116,12 @@ a {
   opacity: 1;
 }
 
-/* Logo left, nav right — plain DOM order, no `order` override. .brand is the
-   header's first child, so the scroll-in logo lands left; the nav holds the
-   right via its own margin-left:auto, and on mobile the header's space-between
-   puts the hamburger right (the nav overlay is position:fixed, out of flow).
-   A previous `order: 1` here flipped the two; it was reverted on request, so
-   don't reintroduce it. */
+/* Nav left, logo right — by DOM order (.brand follows <nav> in index.html), with
+   no `order` override anywhere in this file. Keep it that way: flipping the paint
+   order instead leaves .brand first in the tab order while it renders far right,
+   so keyboard focus jumps right then back to the far left (WCAG 2.4.3 / 1.3.2).
+   That is precisely what the si.edu fork's `order: 1` does. Move the element, not
+   the paint order. */
 .brand {
   display: flex;
   align-items: center;
@@ -162,17 +162,21 @@ a {
   transform: none;
 }
 
+/* No auto margin here, and none on .brand either — the header's plain
+   `space-between` already lands every case correctly now that the source order is
+   nav-then-logo:
+     >1200px      in flow: [nav, brand]     -> nav left, logo right
+     881-1200px   .brand is display:none    -> nav is the lone item, and a lone
+                  space-between item sits at the START, i.e. left. That used to be
+                  the bug this rule worked around; with nav-left it is the goal.
+     <=880px      .site-nav is position:fixed inset:0, so the in-flow items are
+                  [brand, toggle] -> logo left, hamburger right, unchanged.
+   An auto margin on .brand would break that last case by shoving the logo up
+   against the hamburger. */
 .site-nav {
   display: flex;
   align-items: center;
   gap: clamp(1rem, 2.5vw, 2.2rem);
-  /* Anchor the nav right on its own rather than leaning on the header's
-     space-between, which only pushes it over while a sibling exists to push
-     against: .brand is hidden in the 881-1150px band below, and a lone
-     space-between item sits at the START, which would swing the nav left.
-     margin-left:auto holds it right whether or not the logo is there. (No
-     effect on mobile — .site-nav is position:fixed inset:0 there.) */
-  margin-left: auto;
 }
 
 .site-nav a {
@@ -235,14 +239,16 @@ a {
    the CTA gained " SAO"; re-measure it if this label changes again.
    The hamburger takes over at/below 880px (the nav row alone needs ~825px to sit
    uncramped), so in the band between, one of them has to give — and it's the
-   logo, a decorative echo of the hero lockup, not the nav, whose Support CTA
-   would otherwise sit off screen.
+   logo, a decorative echo of the hero lockup, rather than the nav.
    This matters at the top of the page too, not just once scrolled: `visibility:
    hidden` still reserves the layout box, so .brand holds its full width even
-   while invisible and pushes the nav either way.
-   (The old `order: 1` layout hid this bug rather than fixing it — with the nav
-   first, the LOGO was the thing overflowing, and an invisible logo clipping
-   off-screen is something nobody ever notices.)
+   while invisible and squeezes the nav either way.
+   NOTE the failure mode flipped with the nav-left/logo-right order: the logo is
+   now the trailing item, so without this band it is the LOGO that overflows off
+   the right edge — and an invisible logo clipping off-screen is something nobody
+   ever notices, which is exactly how this went unseen in the original nav-left
+   build. Check the logo's right edge against the viewport when re-measuring, not
+   just the Support CTA.
    Hide .brand itself, not .brand-logo: an <a> whose only content is a
    display:none image is a focusable link with no accessible name. */
 @media (min-width: 881px) and (max-width: 1200px) {
