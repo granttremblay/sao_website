@@ -22,7 +22,8 @@ assets/
                             AstroAI, NASA SciX (SVG) — all fully outlined, no live text
   data/news.json            CfA news feed data (auto-generated — do not hand-edit)
   images/                   Web-optimized JPEGs used by the site
-    card_images/            Mission card photos (~900px wide)
+    card_images/            Mission card photos (~900px wide JPEG, q70-75; .png/.webp
+                            masters dropped here stay local and are gitignored)
     discoveries/            Our Top Discoveries images (800x360 JPEGs, fade into card)
     impact/                 Impact card top images (800x360 JPEGs, fade into card)
     hero_images/            Static hero backdrops (high-res JPEGs; masters in originals/)
