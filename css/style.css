@@ -971,6 +971,19 @@ a {
   cursor: pointer;
 }
 
+/* The header fills its .impact-item to the padding-box edge, and .impact-item is
+   overflow:hidden (needed for the flush-edge discovery rows). The global
+   :focus-visible ring is drawn 3px OUTWARD, so it landed entirely outside the clip
+   box and was painted away on the left, top and right — leaving these seven headers,
+   the primary controls of the Impact section, with no visible keyboard focus at all.
+   axe cannot catch a clipped outline, so this passed every automated scan.
+   Draw it inward instead. Do not restore an outward offset here. */
+.impact-acc-header:focus-visible {
+  outline: 3px solid var(--si-cyan);
+  outline-offset: -3px;
+  border-radius: inherit;
+}
+
 /* Left image that melts left-to-right into the navy via a horizontal mask. */
 .impact-acc-art {
   flex: 0 0 clamp(120px, 26%, 260px);
@@ -1793,10 +1806,16 @@ a {
   margin-bottom: 2.2rem;
 }
 
+/* Screen-reader-only text. The margin/padding/border zeroing matters once these
+   sit inside flex rows (every external link carries one) — without it the 1px box
+   can still contribute width and a flex gap beside the visible label. */
 .visually-hidden {
   position: absolute;
   width: 1px;
   height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;

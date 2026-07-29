@@ -527,6 +527,12 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
 - **Keyboard** — Tab from the top: the "Skip to main content" link appears first; all links show
   a visible cyan focus outline; on mobile widths the closed menu must NOT be tabbable, Escape
   closes the open menu and returns focus to the toggle.
+- **Focus rings vs. `overflow: hidden`** — the global `:focus-visible` draws its outline 3px
+  *outward*, which a clipping ancestor will silently paint away. `.impact-item` is
+  `overflow: hidden` and its `.impact-acc-header` fills it to the padding-box edge, so that
+  header overrides the offset to `-3px` (inward). Keep it negative; axe cannot detect a clipped
+  outline, so this fails silently in automated scans. Check any new control placed flush inside
+  a clipped container the same way.
 - **Motion** — with `prefers-reduced-motion` enabled, reveals/mosaic/stat rotation all go static;
   the hero backdrop is already static (visitor-switched, no crossfade transition under reduced
   motion). Nothing on the page auto-advances anymore (the news feed's arrows are manual-only), so
@@ -534,6 +540,18 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
   (WCAG 2.2.2).
 - **Structure** — one `<h1>`, logical heading order, `<main>` landmark present, nav landmarks
   labeled, decorative glyphs (↗ arrows) wrapped in `aria-hidden` spans.
+- **External links** — every `target="_blank"` link carries
+  `<span class="visually-hidden">(opens in a new tab)</span>` immediately before its `</a>`, so
+  the jump to a new tab is announced (WCAG 3.2.5 / technique G201). The visible ↗ stays
+  `aria-hidden`. Do **not** wrap the label in `<strong>` to do this — on the CfA buttons that
+  picks up `.cfa strong { color: var(--si-yellow) }` and repaints the label gold. Add a span,
+  nothing else. The one deliberate exception is the footer logo link, which duplicates the
+  "Smithsonian Science" text link beside it and is hidden with `tabindex="-1" aria-hidden="true"`
+  plus `alt=""` (both halves are required — `aria-hidden` alone on a focusable element is itself
+  a violation).
+- **`.visually-hidden`** — keep the `margin: -1px; padding: 0; border: 0` in that rule. Without
+  them the 1px box can still contribute width and a flex gap next to the visible label, and it is
+  now used on ~44 links.
 
 ## Social sharing
 
