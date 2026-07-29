@@ -20,7 +20,7 @@
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 DISC="$REPO/assets/images/discoveries"
 ORIG="$DISC/originals"
 

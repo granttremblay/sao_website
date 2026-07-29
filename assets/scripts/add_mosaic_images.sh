@@ -15,7 +15,7 @@
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 SOURCES="$REPO/assets/images/mosaic_sources"
 MOSAIC="$REPO/assets/images/mosaic"
 DONE="$SOURCES/processed"

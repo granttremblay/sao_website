@@ -17,7 +17,7 @@
 # Pillow, point this at a virtualenv:  PYTHON=/opt/sao/venv/bin/python
 #
 # Example crontab — daily at 03:17 server time, appending to a log:
-#   17 3 * * * /var/www/sao_website/scripts/refresh_news.sh >> /var/log/sao-news.log 2>&1
+#   17 3 * * * /var/www/sao_website/assets/scripts/refresh_news.sh >> /var/log/sao-news.log 2>&1
 
 set -euo pipefail
 

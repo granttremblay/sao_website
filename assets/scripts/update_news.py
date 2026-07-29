@@ -23,7 +23,7 @@ from PIL import Image
 NEWS_URL = "https://www.cfa.harvard.edu/news"
 MAX_ITEMS = 6
 IMG_WIDTH = 700
-REPO = pathlib.Path(__file__).resolve().parent.parent
+REPO = pathlib.Path(__file__).resolve().parent.parent.parent
 IMG_DIR = REPO / "assets" / "images" / "news"
 DATA_FILE = REPO / "assets" / "data" / "news.json"
 

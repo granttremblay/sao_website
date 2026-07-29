@@ -21,7 +21,7 @@ jobs:
       - run: pip install Pillow
 
       - name: Scrape cfa.harvard.edu/news
-        run: python3 scripts/update_news.py
+        run: python3 assets/scripts/update_news.py
 
       - name: Commit and push if the feed changed
         run: |

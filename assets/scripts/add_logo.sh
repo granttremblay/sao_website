@@ -24,7 +24,7 @@
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 LOGOS="$REPO/assets/logos"
 ORIG="$LOGOS/originals"
 CSS="$REPO/assets/css/style_v5.css"

@@ -27,12 +27,13 @@ assets/
     mosaic_sources/         Raw drop folder for new mosaic images (gitignored)
     news/                   Cached CfA news images (auto-generated)
   favicon.svg               Smithsonian sunburst (+ PNG fallbacks)
-scripts/
-  add_mosaic_images.sh      Mosaic image pipeline (see below)
-  add_hero_images.sh        Hero backdrop image pipeline (see below)
-  add_discovery_images.sh   Our Top Discoveries image pipeline (see below)
-  add_logo.sh               Partner/mission logo pipeline + --logo-h knob (see below)
-  update_news.py            CfA news feed scraper (see below)
+  scripts/
+    add_mosaic_images.sh    Mosaic image pipeline (see below)
+    add_hero_images.sh      Hero backdrop image pipeline (see below)
+    add_discovery_images.sh Our Top Discoveries image pipeline (see below)
+    add_logo.sh             Partner/mission logo pipeline + --logo-h knob (see below)
+    update_news.py          CfA news feed scraper (see below)
+    refresh_news.sh         Cron wrapper for update_news.py (self-hosted deploys)
 .github/workflows/
   update-news.yml           Daily Action that refreshes the news feed
 ```
@@ -70,8 +71,8 @@ hangs off this.
 2. Run:
 
    ```bash
-   ./scripts/add_mosaic_images.sh          # process + update manifest locally
-   ./scripts/add_mosaic_images.sh --push   # ...and commit + push to deploy
+   ./assets/scripts/add_mosaic_images.sh          # process + update manifest locally
+   ./assets/scripts/add_mosaic_images.sh --push   # ...and commit + push to deploy
    ```
 
 The script center-crops each image to a 600×600 JPEG tile named `mosaic_NN.jpg`, regenerates the `MOSAIC_MANIFEST` array in `assets/js/main_v4.js`, syntax-checks the result, and moves processed sources to `mosaic_sources/processed/`. It also rejects images that already exist in the roster under a different filename (perceptual hash comparison) — the on-page rotation guarantees no image ever appears in two grid tiles at once, but it can only do that if each image exists exactly once. macOS only (uses `sips`; duplicate detection needs Pillow, and is skipped gracefully without it).
@@ -79,7 +80,7 @@ The script center-crops each image to a 600×600 JPEG tile named `mosaic_NN.jpg`
 ## The news feed (Impact section)
 
 "News from the Smithsonian Astrophysical Observatory" renders from `assets/data/news.json`, which
-`scripts/update_news.py` builds by scraping the Recent News Releases list on
+`assets/scripts/update_news.py` builds by scraping the Recent News Releases list on
 [cfa.harvard.edu/news](https://www.cfa.harvard.edu/news) (top 6 items, images downloaded and
 optimized into `assets/images/news/`). A scheduled GitHub Action
 (`.github/workflows/update-news.yml`) runs it daily and commits any changes, so the live site
@@ -90,19 +91,22 @@ the script exits nonzero rather than writing a bad feed — check the Action log
 ### Keeping the feed fresh on a self-hosted server (not GitHub Pages)
 
 The feed is just two static things the browser fetches — `assets/data/news.json` and
-`assets/images/news/*.jpg` — and `update_news.py` writes them relative to its own location
-(`scripts/../assets/...`). So on a server that hosts this site outside GitHub Pages, **no code,
-HTML, or rebuild is needed** — just run the scraper on a daily cron so it regenerates those files
-in place. As long as this `scripts/` folder ships inside (or one level above `assets/` in) the
-docroot, the refresh lands directly in the live files.
+`assets/images/news/*.jpg` — and `update_news.py` writes them relative to its own location: it
+resolves the site root as `Path(__file__).parent.parent.parent` (i.e. `assets/scripts/../../`) and
+writes into `<root>/assets/...` from there. So on a server that hosts this site outside GitHub
+Pages, **no code, HTML, or rebuild is needed** — just run the scraper on a daily cron so it
+regenerates those files in place. As long as `assets/scripts/` keeps its position two levels below
+the site root, the refresh lands directly in the live files. **If you ever move the scripts, fix
+that root derivation to match** — it is the one thing in this repo that hardcodes its own depth
+(the four `.sh` pipelines do the same with `dirname "$0"/../..`).
 
-Use the `scripts/refresh_news.sh` wrapper (stable working dir + timestamped logging + a clear
+Use the `assets/scripts/refresh_news.sh` wrapper (stable working dir + timestamped logging + a clear
 failure exit code). One-time setup, then a crontab line:
 
 ```bash
 pip install Pillow                       # once, on the server (or in a venv)
 # crontab -e — daily at 03:17 server time, appending to a log:
-17 3 * * * /var/www/sao_website/scripts/refresh_news.sh >> /var/log/sao-news.log 2>&1
+17 3 * * * /var/www/sao_website/assets/scripts/refresh_news.sh >> /var/log/sao-news.log 2>&1
 ```
 
 Notes: the scrape needs outbound HTTPS to `cfa.harvard.edu`; the cron user needs write access to
@@ -212,8 +216,8 @@ To add a new discovery image:
 1. Drop it (any size/format) into `assets/images/discoveries/` and run:
 
    ```bash
-   ./scripts/add_discovery_images.sh          # crop to 800x360, <500KB
-   ./scripts/add_discovery_images.sh --push   # ...and commit + push to deploy
+   ./assets/scripts/add_discovery_images.sh          # crop to 800x360, <500KB
+   ./assets/scripts/add_discovery_images.sh --push   # ...and commit + push to deploy
    ```
 
    The script center-crops to 800×360 (the same shape as `assets/images/impact/*.jpg`) with quality
@@ -226,8 +230,8 @@ To add a new discovery image:
 **1. Drop the master in `assets/logos/originals/` and run the script.**
 
 ```bash
-./scripts/add_logo.sh          # optimize + add the CSS size knob + print snippets
-./scripts/add_logo.sh --push   # ...and commit + push to deploy
+./assets/scripts/add_logo.sh          # optimize + add the CSS size knob + print snippets
+./assets/scripts/add_logo.sh --push   # ...and commit + push to deploy
 ```
 
 For each master it: resizes rasters to at most 320px tall (a logo never needs more, even on retina —
@@ -361,8 +365,8 @@ master image(s) — any size, any format (jpg/png/heic/webp/tiff) — into
 `assets/images/hero_images/originals/` and run:
 
 ```bash
-./scripts/add_hero_images.sh          # optimize + refresh the manifest
-./scripts/add_hero_images.sh --push   # ...and commit + push to deploy
+./assets/scripts/add_hero_images.sh          # optimize + refresh the manifest
+./assets/scripts/add_hero_images.sh --push   # ...and commit + push to deploy
 ```
 
 For each master the script writes a web `<name>.jpg` to `assets/images/hero_images/` — resized to
@@ -383,7 +387,7 @@ to write at all** (exit 1, naming the entry) if it can't identify one. If you ev
 entry's `file:` to a plain `file: "name.jpg"` and re-run — don't work around it.
 
 **`milkyway_backdrop.jpg` is pinned to the top of the manifest** on every run, so it's always the
-first frame a visitor sees. Change `PIN_FIRST` in `scripts/add_hero_images.sh` to pin a different
+first frame a visitor sees. Change `PIN_FIRST` in `assets/scripts/add_hero_images.sh` to pin a different
 one (or set it to `None` for no pinning). Everything else keeps the order you put it in.
 
 - **Reorder** by editing the order of `HERO_MANIFEST` entries (new images are appended at the end,

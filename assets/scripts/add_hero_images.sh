@@ -23,7 +23,7 @@
 
 set -euo pipefail
 
-REPO="$(cd "$(dirname "$0")/.." && pwd)"
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 HERO="$REPO/assets/images/hero_images"
 ORIG="$HERO/originals"
 MAINJS="$REPO/assets/js/main_v4.js"
