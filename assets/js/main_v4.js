@@ -101,8 +101,8 @@
 
   const HERO_DIR = "assets/images/hero_images/";
   const HERO_LOGO = {
-    dark: "assets/logos/si_AO_rgb_vertical_color-reversed.svg", // white lockup, for dark frames
-    light: "assets/logos/si_AO_rgb_verical_color.svg"           // colour lockup w/ dark wordmark
+    dark: "assets/logos/sao_lockup_vertical_white.svg", // white lockup, for dark frames
+    light: "assets/logos/sao_lockup_vertical_dark.svg"  // same lockup, wordmark in #101821
   };
   const HERO_MANIFEST = [
     { file: "milkyway_backdrop.jpg", focus: "center", credit: "Our home galaxy, the Milky Way. Credit: ESO/S. Brunier" },

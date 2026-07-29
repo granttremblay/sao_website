@@ -15,7 +15,8 @@ assets/
   js/main_v4.js             Interactions: nav, scroll reveals, hero backdrops,
                             rotating stat, photo mosaic, news feed,
                             impact accordion (incl. Our Top Discoveries), timeline
-  logos/                    SI/AO, CfA, Smithsonian Science, STARS, AstroAI, NASA SciX (SVG)
+  logos/                    SI/AO (sao_lockup_*.svg), CfA, Smithsonian Science, STARS,
+                            AstroAI, NASA SciX (SVG) — all fully outlined, no live text
   data/news.json            CfA news feed data (auto-generated — do not hand-edit)
   images/                   Web-optimized JPEGs used by the site
     card_images/            Mission card photos (~900px wide)
@@ -244,6 +245,17 @@ vs transparent padding — see "Resizing a logo" below for why that number matte
 
 `originals/` is gitignored: keep the master there, ship only the resized file. Name the master what
 you want the CSS class to be (`sma.png` → `.impact-logo-sma`), since the filename becomes the slug.
+
+**An SVG logo must be fully outlined.** A vector exported with live `<text>` references a font by
+name, and the browser substitutes whatever it has: on desktop that is usually a passable serif, so
+the file looks fine locally, but Android ships no metrically-similar serif and the hand-kerned
+`<tspan x="...">` offsets collide into unreadable mush. This is exactly how the SI/AO lockups
+shipped for a month before anyone opened the site on a phone. Convert text to outlines in the source
+app (Illustrator: Type → Create Outlines) and check the shipped file before committing:
+
+```bash
+grep -c '<text\|font-family' assets/logos/*.svg   # every file must report 0
+```
 
 **The script does the mechanical part; you still choose the placement and write real alt text** —
 step 2 is a copy-paste-and-edit of what it printed.
@@ -489,7 +501,7 @@ push the backdrop *toward* the text and make it worse, so `--hero-scrim-rgb` fli
 halo brightens instead of darkens. The rule is that the scrim always pushes the backdrop *away* from
 the ink. On that slide `applyTone()` in `assets/js/main_v4.js` sets
 `.hero[data-tone="light"]` (and `[data-hero-tone]` on the header) and swaps the hero lockup to the
-colour logo (`si_AO_rgb_verical_color.svg`); the CSS block under `/* Light-tone hero */` flips the
+dark-wordmark logo (`sao_lockup_vertical_dark.svg`); the CSS block under `/* Light-tone hero */` flips the
 logo halo, title, tagline, credit, arrows, ghost button, and the transparent nav to dark navy ink.
 The header only follows the frame while it's transparent (`:not(.scrolled)`), and the dark mobile
 menu keeps white links (`.site-nav:not(.open)`) and a white close ✕ (`.nav-toggle:not([aria-expanded="true"])`).

@@ -43,10 +43,23 @@ exist and is NOT this site).
 - Brand: Geologica (Google Fonts, matches science.si.edu), Smithsonian blue `#002554`,
   sunburst yellow `#ffcd00`, cyan `#38bdf8`→indigo `#6366f1` gradient for accents
   (CfA red/violet vars exist but are unused — user reverted them as too dark on navy).
-- Logos in assets/logos. SI/AO SVGs contain live Minion Pro `<text>` (renders via serif
-  fallback — acceptable, outlined versions would be better). CfA + Smithsonian Science
-  logos are fully outlined. "Reversed" = white text for dark backgrounds. The white STARS
-  logo is a generated recolor of the black one.
+- Logos in assets/logos. **Every SVG here must be fully outlined — no `<text>`, no
+  `font-family`.** The SI/AO lockups used to ship as `si_AO_rgb_*.svg` with live
+  `MinionPro-Regular`/`MinionPro-It` `<text>`; that renders as a serif fallback on desktop
+  (looked "fine") but as garbage on Android, which has no serif that metrically fits the
+  hand-kerned `<tspan x=...>` offsets. They were replaced 2026-07-29 by pathed masters and
+  the six old files deleted. In use now: `sao_lockup_horizontal_white.svg` (header brand),
+  `sao_lockup_vertical_white.svg` (hero, dark frames), and `sao_lockup_vertical_dark.svg`
+  (hero, `tone: "light"` frames — a generated recolor of the vertical white, `#fff` →
+  `#101821` on the single wordmark fill; regenerate it the same way if the master changes).
+  There is deliberately no pathed yellow-reversed variant — nothing used the old ones.
+  Audit any new logo with `grep -c '<text\|font-family'` before shipping it.
+  Note the new masters are a hair wider than the old (horizontal viewBox 392.21 → 399.89),
+  so the header lockup went 176 → 180px scrolled; the 881-1200px `.brand: display:none`
+  band was re-measured after the swap and still holds (51.6px nav/logo clearance at 1201px,
+  logo right edge 48px inside the viewport, no document overflow).
+  CfA + Smithsonian Science logos are fully outlined. "Reversed"/"white" = white text for
+  dark backgrounds. The white STARS logo is a generated recolor of the black one.
 - Partner/mission logos (TEMPO, STARS, AstroAI, NASA SciX, GMT, EHT, SMA, FLWO, VERITAS, CXC):
   drop the master in assets/logos/originals/ (gitignored) and run `assets/scripts/add_logo.sh` — it
   resizes rasters to <=320px tall, copies SVGs through, appends a `.impact-logo-<name>` --logo-h
