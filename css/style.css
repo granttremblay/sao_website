@@ -141,11 +141,19 @@ a {
   height: 38px;
 }
 
+/* The logo only fades in once the hero lockup scrolls away, but `opacity: 0`
+   alone leaves the link in the tab order — a keyboard user landed on an
+   invisible 214px "Smithsonian Astrophysical Observatory" link right after the
+   skip link, with a focus ring on nothing. `pointer-events` blocks the mouse
+   only; `visibility: hidden` is what actually removes it from the tab order.
+   Keep both, and keep the paired `visibility: visible` below. */
 .brand {
+  visibility: hidden;
   pointer-events: none;
 }
 
 .site-header.brand-visible .brand {
+  visibility: visible;
   pointer-events: auto;
 }
 
@@ -219,20 +227,25 @@ a {
   display: none;
 }
 
-/* The full nav row and the scroll-in logo don't both fit until ~1150px: the nav
-   needs ~860px (five section links + Careers + the Support CTA), the horizontal
-   lockup ~215px, plus the header's own padding. The hamburger takes over at/below
-   880px (the nav row alone needs ~860px to sit uncramped), so in the band between,
-   one of them has to give — and it's the logo, a decorative echo of the hero
-   lockup, not the nav, whose Support CTA would otherwise sit off screen.
-   This matters at the top of the page too, not just once scrolled: .brand still
-   occupies its full width at opacity:0, so it pushes the nav either way.
+/* The full nav row and the scroll-in logo don't both fit until ~1200px: the nav
+   needs ~900px (five section links + Careers + the "Support SAO" CTA), the
+   horizontal lockup ~215px (176px once .scrolled shrinks it — and the logo only
+   ever shows while scrolled), plus the header's own padding. Measured at 1151px
+   the two cleared each other by just 16px, so the bound moved 1150 → 1200 when
+   the CTA gained " SAO"; re-measure it if this label changes again.
+   The hamburger takes over at/below 880px (the nav row alone needs ~825px to sit
+   uncramped), so in the band between, one of them has to give — and it's the
+   logo, a decorative echo of the hero lockup, not the nav, whose Support CTA
+   would otherwise sit off screen.
+   This matters at the top of the page too, not just once scrolled: `visibility:
+   hidden` still reserves the layout box, so .brand holds its full width even
+   while invisible and pushes the nav either way.
    (The old `order: 1` layout hid this bug rather than fixing it — with the nav
    first, the LOGO was the thing overflowing, and an invisible logo clipping
    off-screen is something nobody ever notices.)
    Hide .brand itself, not .brand-logo: an <a> whose only content is a
    display:none image is a focusable link with no accessible name. */
-@media (min-width: 881px) and (max-width: 1150px) {
+@media (min-width: 881px) and (max-width: 1200px) {
   .brand {
     display: none;
   }

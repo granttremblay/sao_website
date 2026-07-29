@@ -143,12 +143,19 @@ exist and is NOT this site).
 - Header layout: SAO logo LEFT, nav RIGHT (plain DOM order — an `order: 1` on `.brand` once
   flipped this and was reverted on request; don't reintroduce it). The logo still only fades in
   on scroll, via `.brand-visible` (an IntersectionObserver on `.hero-logo`, so the header lockup
-  never doubles the hero one). Two non-obvious constraints: (1) the full nav row (~860px, since the
-  external "Careers" link was added alongside Support) plus the horizontal lockup (~215px) plus
-  padding don't fit until ~1150px, and the hamburger only takes over at <=880px (the nav row alone
-  needs ~860px to sit uncramped), so `.brand` is `display:none` in the 881-1150px band — the nav must win,
-  since otherwise the Support CTA sits off-screen. This bites at page top too: `.brand` holds its
-  full width at `opacity: 0`. (The old nav-left layout merely hid this — the invisible logo was
+  never doubles the hero one). Two non-obvious constraints: (1) the full nav row (~900px, since the
+  external "Careers" link was added alongside the "Support SAO" CTA) plus the horizontal lockup
+  (~215px, ~176px once `.scrolled` shrinks it) plus padding don't fit until ~1200px, and the
+  hamburger only takes over at <=880px (the nav row alone needs ~825px to sit uncramped), so
+  `.brand` is `display:none` in the 881-1200px band — the nav must win,
+  since otherwise the Support CTA sits off-screen. **Re-measure this band whenever a nav label
+  changes**: renaming "Support" → "Support SAO" widened the row ~43px and cut the logo/nav
+  clearance at the old 1150 bound to 16px, which is why the bound moved to 1200. At the very
+  bottom of the band (881-920px) the row now sits ~15px into the header padding; still fits, CTA
+  on-screen, no document overflow, but there's little left to give — raise the 880px hamburger
+  bound before adding another link. This bites at page top too: `.brand` holds its
+  full width at `visibility: hidden` (see the accessibility note below — `opacity: 0` alone left
+  it in the tab order). (The old nav-left layout merely hid this — the invisible logo was
   the thing overflowing, so nobody saw it.) Hide `.brand`, not `.brand-logo`, or you leave a
   focusable link with no accessible name. (2) `.site-nav` holds the right with its own
   `margin-left: auto`, NOT the header's space-between — with `.brand` hidden it'd be a lone

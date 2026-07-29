@@ -527,6 +527,12 @@ The site is built to WCAG-minded standards. After meaningful changes, verify:
 - **Keyboard** — Tab from the top: the "Skip to main content" link appears first; all links show
   a visible cyan focus outline; on mobile widths the closed menu must NOT be tabbable, Escape
   closes the open menu and returns focus to the toggle.
+- **Invisible-but-focusable elements** — the header logo fades in only once the hero lockup
+  scrolls away. `opacity: 0` and `pointer-events: none` do **not** remove a link from the tab
+  order (`pointer-events` blocks the mouse only), so `.brand` also carries `visibility: hidden`,
+  paired with `visibility: visible` under `.site-header.brand-visible`. Without it, Tab lands on
+  an invisible 214px link immediately after the skip link. Same rule for anything else revealed
+  on scroll.
 - **Focus rings vs. `overflow: hidden`** — the global `:focus-visible` draws its outline 3px
   *outward*, which a clipping ancestor will silently paint away. `.impact-item` is
   `overflow: hidden` and its `.impact-acc-header` fills it to the padding-box edge, so that
