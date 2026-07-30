@@ -1,5 +1,12 @@
 [
   {
+    "title": "First atmosphere detected on a habitable-zone rocky world",
+    "url": "https://www.cfa.harvard.edu/news/first-atmosphere-detected-habitable-zone-rocky-world",
+    "date": "2026-07-16",
+    "label": "News Release",
+    "image": "assets/images/news/news_9a77dd04fe.jpg"
+  },
+  {
     "title": "CfA Astronomers Win Share of Roman Space Telescope\u2019s Inaugural General Investigator Program",
     "url": "https://www.cfa.harvard.edu/news/cfa-astronomers-win-share-roman-space-telescopes-inaugural-general-investigator-program",
     "date": "2026-07-14",
@@ -19,12 +26,5 @@
     "date": "2026-07-07",
     "label": "News Release",
     "image": "assets/images/news/news_e330cc7ec6.jpg"
-  },
-  {
-    "title": "Founding Gift Launches Smithsonian Scientists Taking Astronomy to Rural Schools (STARS) in Rhode Island",
-    "url": "https://www.cfa.harvard.edu/news/founding-gift-launches-smithsonian-scientists-taking-astronomy-rural-schools-stars-rhode-island",
-    "date": "2026-07-02",
-    "label": "News Release",
-    "image": "assets/images/news/news_a6b98a6bfe.jpg"
   }
 ]
