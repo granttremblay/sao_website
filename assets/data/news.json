@@ -1,5 +1,12 @@
 [
   {
+    "title": "New eclipse web app tracks real-time Sun coverage from anywhere in the world",
+    "url": "https://www.cfa.harvard.edu/news/new-eclipse-web-app-tracks-real-time-sun-coverage-anywhere-world",
+    "date": "2026-08-11",
+    "label": "News Release",
+    "image": "assets/images/news/news_67f594178a.jpg"
+  },
+  {
     "title": "'Little red dots' may be pulsating monster stars that created early-universe black holes, study finds",
     "url": "https://www.cfa.harvard.edu/news/little-red-dots-may-be-pulsating-monster-stars-created-early-universe-black-holes-study-finds",
     "date": "2026-08-05",
@@ -19,12 +26,5 @@
     "date": "2026-07-27",
     "label": "News Release",
     "image": "assets/images/news/news_2dbc5a9dab.jpg"
-  },
-  {
-    "title": "First atmosphere detected on a habitable-zone rocky world",
-    "url": "https://www.cfa.harvard.edu/news/first-atmosphere-detected-habitable-zone-rocky-world",
-    "date": "2026-07-16",
-    "label": "News Release",
-    "image": "assets/images/news/news_9a77dd04fe.jpg"
   }
 ]
