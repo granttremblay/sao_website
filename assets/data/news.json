@@ -1,5 +1,12 @@
 [
   {
+    "title": "Spotlight: Summer interns reflect on research and CfA",
+    "url": "https://www.cfa.harvard.edu/news/spotlight-summer-interns-reflect-research-and-cfa",
+    "date": "2026-08-12",
+    "label": "News Release",
+    "image": null
+  },
+  {
     "title": "New eclipse web app tracks real-time Sun coverage from anywhere in the world",
     "url": "https://www.cfa.harvard.edu/news/new-eclipse-web-app-tracks-real-time-sun-coverage-anywhere-world",
     "date": "2026-08-11",
@@ -19,12 +26,5 @@
     "date": "2026-07-31",
     "label": "News Release",
     "image": null
-  },
-  {
-    "title": "Astronomers find strongest evidence yet that Betelgeuse has a companion",
-    "url": "https://www.cfa.harvard.edu/news/astronomers-find-strongest-evidence-yet-betelgeuse-has-companion",
-    "date": "2026-07-27",
-    "label": "News Release",
-    "image": "assets/images/news/news_2dbc5a9dab.jpg"
   }
 ]
