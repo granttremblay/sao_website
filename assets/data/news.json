@@ -1,5 +1,12 @@
 [
   {
+    "title": "Smithsonian Astrophysical Observatory Announces Inaugural Winners of the SAO Advisory Board Prize in Honor of Charles Alcock",
+    "url": "https://www.cfa.harvard.edu/news/smithsonian-astrophysical-observatory-announces-inaugural-winners-sao-advisory-board-prize-honor",
+    "date": "2026-08-26",
+    "label": "News Release",
+    "image": "assets/images/news/news_a542162727.jpg"
+  },
+  {
     "title": "Giant Magellan Telescope Camera Reaches Fundraising Goal",
     "url": "https://www.cfa.harvard.edu/news/giant-magellan-telescope-camera-reaches-fundraising-goal",
     "date": "2026-08-25",
@@ -19,12 +26,5 @@
     "date": "2026-08-11",
     "label": "News Release",
     "image": "assets/images/news/news_67f594178a.jpg"
-  },
-  {
-    "title": "'Little red dots' may be pulsating monster stars that created early-universe black holes, study finds",
-    "url": "https://www.cfa.harvard.edu/news/little-red-dots-may-be-pulsating-monster-stars-created-early-universe-black-holes-study-finds",
-    "date": "2026-08-05",
-    "label": "News Release",
-    "image": "assets/images/news/news_0292a8879a.jpg"
   }
 ]
