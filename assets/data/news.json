@@ -1,5 +1,12 @@
 [
   {
+    "title": "How the Nancy Grace Roman Telescope Will Change Astronomy",
+    "url": "https://www.cfa.harvard.edu/news/how-nancy-grace-roman-telescope-will-change-astronomy",
+    "date": "2026-08-28",
+    "label": "News Release",
+    "image": "assets/images/news/news_39387f2658.jpg"
+  },
+  {
     "title": "Smithsonian Astrophysical Observatory Announces Inaugural Winners of the SAO Advisory Board Prize in Honor of Charles Alcock",
     "url": "https://www.cfa.harvard.edu/news/smithsonian-astrophysical-observatory-announces-inaugural-winners-sao-advisory-board-prize-honor",
     "date": "2026-08-26",
@@ -19,12 +26,5 @@
     "date": "2026-08-12",
     "label": "News Release",
     "image": null
-  },
-  {
-    "title": "New eclipse web app tracks real-time Sun coverage from anywhere in the world",
-    "url": "https://www.cfa.harvard.edu/news/new-eclipse-web-app-tracks-real-time-sun-coverage-anywhere-world",
-    "date": "2026-08-11",
-    "label": "News Release",
-    "image": "assets/images/news/news_67f594178a.jpg"
   }
 ]
