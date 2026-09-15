@@ -1,5 +1,12 @@
 [
   {
+    "title": "NASA\u2019s Hubble, Webb Find Far-out Solar System Objects \u2018Remember\u2019 Past",
+    "url": "https://www.cfa.harvard.edu/news/nasas-hubble-webb-find-far-out-solar-system-objects-remember-past",
+    "date": "2026-09-09",
+    "label": "News Release",
+    "image": "assets/images/news/news_f2af598495.jpg"
+  },
+  {
     "title": "How the Nancy Grace Roman Telescope Will Change Astronomy",
     "url": "https://www.cfa.harvard.edu/news/how-nancy-grace-roman-telescope-will-change-astronomy",
     "date": "2026-08-28",
@@ -19,12 +26,5 @@
     "date": "2026-08-25",
     "label": "News Release",
     "image": "assets/images/news/news_eb0f259c27.jpg"
-  },
-  {
-    "title": "Spotlight: Summer interns reflect on research and CfA",
-    "url": "https://www.cfa.harvard.edu/news/spotlight-summer-interns-reflect-research-and-cfa",
-    "date": "2026-08-12",
-    "label": "News Release",
-    "image": null
   }
 ]
