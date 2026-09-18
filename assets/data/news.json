@@ -1,5 +1,12 @@
 [
   {
+    "title": "New study reveals common pattern of black hole activity shaping nearby galaxies",
+    "url": "https://www.cfa.harvard.edu/news/new-study-reveals-common-pattern-black-hole-activity-shaping-nearby-galaxies",
+    "date": "2026-09-13",
+    "label": "News Release",
+    "image": "assets/images/news/news_85da737353.jpg"
+  },
+  {
     "title": "NASA\u2019s Hubble, Webb Find Far-out Solar System Objects \u2018Remember\u2019 Past",
     "url": "https://www.cfa.harvard.edu/news/nasas-hubble-webb-find-far-out-solar-system-objects-remember-past",
     "date": "2026-09-09",
@@ -19,12 +26,5 @@
     "date": "2026-08-26",
     "label": "News Release",
     "image": "assets/images/news/news_a542162727.jpg"
-  },
-  {
-    "title": "Giant Magellan Telescope Camera Reaches Fundraising Goal",
-    "url": "https://www.cfa.harvard.edu/news/giant-magellan-telescope-camera-reaches-fundraising-goal",
-    "date": "2026-08-25",
-    "label": "News Release",
-    "image": "assets/images/news/news_eb0f259c27.jpg"
   }
 ]
