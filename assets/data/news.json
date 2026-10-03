@@ -1,5 +1,12 @@
 [
   {
+    "title": "Smithsonian Astrophysical Observatory Receives $3.6M from Gordon and Betty Moore Foundation to Advance Next-Generation Event Horizon Telescope",
+    "url": "https://www.cfa.harvard.edu/news/smithsonian-astrophysical-observatory-receives-36m-gordon-and-betty-moore-foundation-advance-next",
+    "date": "2026-09-17",
+    "label": "News Release",
+    "image": "assets/images/news/news_ac7cf3dbfd.jpg"
+  },
+  {
     "title": "New study reveals common pattern of black hole activity shaping nearby galaxies",
     "url": "https://www.cfa.harvard.edu/news/new-study-reveals-common-pattern-black-hole-activity-shaping-nearby-galaxies",
     "date": "2026-09-13",
@@ -19,12 +26,5 @@
     "date": "2026-08-28",
     "label": "News Release",
     "image": "assets/images/news/news_39387f2658.jpg"
-  },
-  {
-    "title": "Smithsonian Astrophysical Observatory Announces Inaugural Winners of the SAO Advisory Board Prize in Honor of Charles Alcock",
-    "url": "https://www.cfa.harvard.edu/news/smithsonian-astrophysical-observatory-announces-inaugural-winners-sao-advisory-board-prize-honor",
-    "date": "2026-08-26",
-    "label": "News Release",
-    "image": "assets/images/news/news_a542162727.jpg"
   }
 ]
