@@ -1,5 +1,12 @@
 [
   {
+    "title": "No cities on the Moon \u2014 there isn\u2019t enough water, scientists say",
+    "url": "https://www.cfa.harvard.edu/news/no-cities-moon-there-isnt-enough-water-scientists-say",
+    "date": "2026-10-01",
+    "label": "News Release",
+    "image": "assets/images/news/news_e474e4cbf2.jpg"
+  },
+  {
     "title": "Smithsonian Astrophysical Observatory Receives $3.6M from Gordon and Betty Moore Foundation to Advance Next-Generation Event Horizon Telescope",
     "url": "https://www.cfa.harvard.edu/news/smithsonian-astrophysical-observatory-receives-36m-gordon-and-betty-moore-foundation-advance-next",
     "date": "2026-09-17",
@@ -19,12 +26,5 @@
     "date": "2026-09-09",
     "label": "News Release",
     "image": "assets/images/news/news_f2af598495.jpg"
-  },
-  {
-    "title": "How the Nancy Grace Roman Telescope Will Change Astronomy",
-    "url": "https://www.cfa.harvard.edu/news/how-nancy-grace-roman-telescope-will-change-astronomy",
-    "date": "2026-08-28",
-    "label": "News Release",
-    "image": "assets/images/news/news_39387f2658.jpg"
   }
 ]
