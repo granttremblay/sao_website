@@ -1,5 +1,19 @@
 [
   {
+    "title": "The gas around Milky Way's central black hole is rich in metals, study finds",
+    "url": "https://www.cfa.harvard.edu/news/gas-around-milky-ways-central-black-hole-rich-metals-study-finds",
+    "date": "2026-10-20",
+    "label": "News Release",
+    "image": "assets/images/news/news_2baf8d0816.jpg"
+  },
+  {
+    "title": "Astronomer Liam Connor Awarded Packard Fellowship for Science and Engineering",
+    "url": "https://www.cfa.harvard.edu/news/astronomer-liam-connor-awarded-packard-fellowship-science-and-engineering",
+    "date": "2026-10-15",
+    "label": "News Release",
+    "image": null
+  },
+  {
     "title": "CfA Researchers Lead Two of 24 NASA Projects Selected to Expand Public Access to Space Science Nationwide",
     "url": "https://www.cfa.harvard.edu/news/cfa-researchers-lead-two-24-nasa-projects-selected-expand-public-access-space-science-nationwide",
     "date": "2026-10-14",
@@ -12,19 +26,5 @@
     "date": "2026-10-14",
     "label": "News Release",
     "image": "assets/images/news/news_3712487857.jpg"
-  },
-  {
-    "title": "NASA\u2019s Hubble Fellowship Program Symposium Brings 70 Early-Career Astronomers to the Center for Astrophysics",
-    "url": "https://www.cfa.harvard.edu/news/nasas-hubble-fellowship-program-symposium-brings-70-early-career-astronomers-center-astrophysics",
-    "date": "2026-10-14",
-    "label": "News Release",
-    "image": "assets/images/news/news_9f8174159b.jpg"
-  },
-  {
-    "title": "Fireworks in the Sky: Gemini North Reveals Pearl-Like Knots in the Remnant of a Supernova Witnessed in the Year 1181",
-    "url": "https://www.cfa.harvard.edu/news/fireworks-sky-gemini-north-reveals-pearl-knots-remnant-supernova-witnessed-year-1181",
-    "date": "2026-10-05",
-    "label": "News Release",
-    "image": "assets/images/news/news_6cc560f1fe.jpg"
   }
 ]
