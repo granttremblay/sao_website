@@ -1,5 +1,12 @@
 [
   {
+    "title": "Smithsonian Scientists Create Most Detailed Simulation Yet of the Early Universe",
+    "url": "https://www.cfa.harvard.edu/news/smithsonian-scientists-create-most-detailed-simulation-yet-early-universe",
+    "date": "2026-10-27",
+    "label": "News Release",
+    "image": "assets/images/news/news_854d04c4a0.jpg"
+  },
+  {
     "title": "The gas around Milky Way's central black hole is rich in metals, study finds",
     "url": "https://www.cfa.harvard.edu/news/gas-around-milky-ways-central-black-hole-rich-metals-study-finds",
     "date": "2026-10-20",
@@ -19,12 +26,5 @@
     "date": "2026-10-14",
     "label": "News Release",
     "image": null
-  },
-  {
-    "title": "Smithsonian Astrophysical Observatory Wins AI For Math Fund Award",
-    "url": "https://www.cfa.harvard.edu/news/smithsonian-astrophysical-observatory-wins-ai-math-fund-award",
-    "date": "2026-10-14",
-    "label": "News Release",
-    "image": "assets/images/news/news_3712487857.jpg"
   }
 ]
